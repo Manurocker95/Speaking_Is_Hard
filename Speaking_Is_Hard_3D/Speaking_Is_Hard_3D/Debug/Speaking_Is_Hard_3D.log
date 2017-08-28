@@ -1,0 +1,7 @@
+﻿  main.cpp
+  arm-none-eabi-g++ -MMD -MP -MF /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build/main.d -g -Wall -O2 -mword-relocations -fomit-frame-pointer -ffunction-sections -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/include -I/c/devkitPro/libctru/include -I/c/devkitPro/portlibs/armv6k/include -I/c/devkitPro/portlibs/3ds/include -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build -DARM11 -D_3DS -fno-rtti -fno-exceptions -std=gnu++11 -c /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/main.cpp -o main.o 
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/main.cpp(19,9): warning G22EB126D: #pragma once in main file
+   #pragma once
+           ^~~~
+  linking Speaking_Is_Hard_3D.elf
+  built ... Speaking_Is_Hard_3D.3dsx
