@@ -1,4 +1,47 @@
-﻿  main.cpp
+﻿  Game.cpp
+  arm-none-eabi-g++ -MMD -MP -MF /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build/Game.d -g -Wall -O2 -mword-relocations -fomit-frame-pointer -ffunction-sections -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/include -I/c/devkitPro/libctru/include -I/c/devkitPro/portlibs/armv6k/include -I/c/devkitPro/portlibs/3ds/include -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build -DARM11 -D_3DS -fno-rtti -fno-exceptions -std=gnu++11 -c /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp -o Game.o 
+  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp: In destructor 'GameScreen::~GameScreen()':
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(32,9): warning G90E9E4C3: possible problem detected in invocation of delete operator: [-Wdelete-incomplete]
+    delete font;
+           ^~~~
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(32,9): warning G1DA8B262: invalid use of incomplete type 'struct sftd_font'
+  In file included from d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.h:24:0,
+                   from d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp:19:
+  c:/devkitPro/libctru/include/sftd.h:22:16: note: forward declaration of 'struct sftd_font'
+   typedef struct sftd_font sftd_font;
+                  ^~~~~~~~~
+  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp:32:9: note: neither the destructor nor the class-specific operator delete will be called, even if they are declared when the class is defined
+    delete font;
+           ^~~~
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(33,9): warning G90E9E4C3: possible problem detected in invocation of delete operator: [-Wdelete-incomplete]
+    delete font2;
+           ^~~~~
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(33,9): warning G1DA8B262: invalid use of incomplete type 'struct sftd_font'
+  In file included from d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.h:24:0,
+                   from d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp:19:
+  c:/devkitPro/libctru/include/sftd.h:22:16: note: forward declaration of 'struct sftd_font'
+   typedef struct sftd_font sftd_font;
+                  ^~~~~~~~~
+  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp:33:9: note: neither the destructor nor the class-specific operator delete will be called, even if they are declared when the class is defined
+    delete font2;
+           ^~~~~
+  SceneManager.cpp
+  arm-none-eabi-g++ -MMD -MP -MF /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build/SceneManager.d -g -Wall -O2 -mword-relocations -fomit-frame-pointer -ffunction-sections -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/include -I/c/devkitPro/libctru/include -I/c/devkitPro/portlibs/armv6k/include -I/c/devkitPro/portlibs/3ds/include -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build -DARM11 -D_3DS -fno-rtti -fno-exceptions -std=gnu++11 -c /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SceneManager.cpp -o SceneManager.o 
+  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SceneManager.cpp: In destructor 'SceneManager::~SceneManager()':
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SceneManager.cpp(33,9): warning GEC9AB9D8: deleting object of polymorphic class type 'Scene' which has non-virtual destructor might cause undefined behavior [-Wdelete-non-virtual-dtor]
+    delete m_actualScene;
+           ^~~~~~~~~~~~~
+  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SceneManager.cpp: In member function 'void SceneManager::setActualScene(SceneManager::SCENES)':
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SceneManager.cpp(74,23): warning GEC9AB9D8: deleting object of polymorphic class type 'Scene' which has non-virtual destructor might cause undefined behavior [-Wdelete-non-virtual-dtor]
+    delete (m_actualScene);
+                         ^
+  SplashScreen.cpp
+  arm-none-eabi-g++ -MMD -MP -MF /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build/SplashScreen.d -g -Wall -O2 -mword-relocations -fomit-frame-pointer -ffunction-sections -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/include -I/c/devkitPro/libctru/include -I/c/devkitPro/portlibs/armv6k/include -I/c/devkitPro/portlibs/3ds/include -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build -DARM11 -D_3DS -fno-rtti -fno-exceptions -std=gnu++11 -c /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SplashScreen.cpp -o SplashScreen.o 
+  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SplashScreen.cpp: In member function 'void SplashScreen::GoToGame()':
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SplashScreen.cpp(108,13): warning GEC9AB9D8: deleting object of polymorphic class type 'SplashScreen' which has non-virtual destructor might cause undefined behavior [-Wdelete-non-virtual-dtor]
+    delete(this);
+               ^
+  main.cpp
   arm-none-eabi-g++ -MMD -MP -MF /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build/main.d -g -Wall -O2 -mword-relocations -fomit-frame-pointer -ffunction-sections -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/include -I/c/devkitPro/libctru/include -I/c/devkitPro/portlibs/armv6k/include -I/c/devkitPro/portlibs/3ds/include -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build -DARM11 -D_3DS -fno-rtti -fno-exceptions -std=gnu++11 -c /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/main.cpp -o main.o 
 d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/main.cpp(19,9): warning G22EB126D: #pragma once in main file
    #pragma once

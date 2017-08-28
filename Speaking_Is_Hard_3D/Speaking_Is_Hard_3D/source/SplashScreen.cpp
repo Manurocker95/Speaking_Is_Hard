@@ -37,7 +37,7 @@ void SplashScreen::Start()
 	m_splashOpacity = 0;
 	m_sfxSplash = false;
 	m_goToGame = false;
-	m_splashScreen = sfil_load_PNG_file(IMG_SPLASHSCREEN, SF2D_PLACE_RAM);
+	m_splashScreen = sfil_load_PNG_file(IMG_BACKGROUND, SF2D_PLACE_RAM);
 	m_SFX = new sound(SND_SFX_SPLASH, 2, false);
 }
 

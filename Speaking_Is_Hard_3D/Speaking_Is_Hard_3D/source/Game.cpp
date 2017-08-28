@@ -40,8 +40,10 @@ void GameScreen::Start()
 	m_pause = false;
 	m_playedBefore = false;
 	m_gameStarted = false;
-	m_timerToGame = 0;
 	m_score = 0;
+	m_maxTime = TIMEPERPUZZLE;
+	m_time = m_maxTime;
+	m_bgOpacity = 255;
 
 	// We will use 2 channels for sounds: 1 = BGM, 2= Sound effects so they can be played at same time. You can set as channels as you want.
 	// We clear the channels
@@ -54,6 +56,10 @@ void GameScreen::Start()
 
 	// We initialize our game variables
 	m_offset = 0;
+
+	m_bg = sfil_load_PNG_file(IMG_BACKGROUND, SF2D_PLACE_RAM);
+	m_sprites = sfil_load_PNG_file(IMG_SPRITES, SF2D_PLACE_RAM);
+
 	// We load our sounds // PATH, CHANNEL, LOOP? -> // BGM plays with loop, but sfx just one time
 	m_bgm = new sound(SND_BGM_GAME, 1, true);		
 
@@ -69,7 +75,46 @@ void GameScreen::goToTitle()
 
 void GameScreen::Draw()
 {
+	m_offset = 0;
 
+	switch (m_screen)
+	{
+	case TITLE:
+		// Top Screen
+		sf2d_start_frame(GFX_TOP, GFX_LEFT);
+		sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, 0, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
+		sf2d_draw_texture_part(m_sprites, 70, 40, 696, 254, 242, 155);
+		sf2d_end_frame();
+
+		// If we have activated 3D in Settings
+		if (STEREOSCOPIC_3D_ACTIVATED)
+		{
+			// We check the offset by the slider
+			m_offset = CONFIG_3D_SLIDERSTATE * MULTIPLIER_3D;
+			sf2d_start_frame(GFX_TOP, GFX_RIGHT);
+			sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, 0, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
+			sf2d_draw_texture_part(m_sprites, 70 - m_offset, 60, 696, 254,242, 155);
+			sf2d_end_frame();
+		}
+
+		// Bottom Screen
+		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+		sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, HEIGHT, BOTTOM_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
+		
+		sftd_draw_text(font, 20, HEIGHT - 30, C_WHITE, 15, "Manurocker95 (C) 2017");
+		sftd_draw_text(font, 230, HEIGHT - 30, C_WHITE, 15, "VERSION: ");
+		sftd_draw_text(font, 280, HEIGHT - 30, C_WHITE, 15, VERSION);
+
+		if (DEBUGMODE)
+			sftd_draw_text(font, 230, 8, C_WHITE, 15, "DEBUG MODE");
+
+		sf2d_end_frame();
+		break;
+	case GAME:
+		break;
+	case END:
+		break;
+	}
 }
 
 void GameScreen::Update()
@@ -83,6 +128,18 @@ void GameScreen::CheckInputs()
 	held = hidKeysHeld();
 	
 
+	switch (m_screen)
+	{
+	case TITLE:
+
+		break;
+	case GAME:
+		break;
+	case END:
+		break;
+	}
+
+
 	if (hidKeysDown() & KEY_START)
 	{
 		m_pause = !m_pause;
@@ -91,7 +148,7 @@ void GameScreen::CheckInputs()
 	// We go to tile when pressing Select
 	if ((hidKeysDown() & KEY_SELECT))
 	{
-		
+		SceneManager::instance()->exitGame();
 	}
 }
 

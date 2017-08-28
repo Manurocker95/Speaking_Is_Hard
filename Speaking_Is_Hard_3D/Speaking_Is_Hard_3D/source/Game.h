@@ -66,11 +66,14 @@ private:
 	bool m_pause;						// Boolean for pausing the game
 	bool m_playedBefore;
 	float m_offset;						// Offset for 3D
-	u32 m_score, m_maxScore;			// Current score and Max Score
-	u32 m_timeToStartGame = 200;		// Max time for starting game
-	u32 m_timerToGame;					// Count down timer to start game (Ready? Go!)
+	u32 m_score, m_maxScore;			// Current score and Max 
+	u32 m_time, m_maxTime;
+	u32 m_bgOpacity;
 	u32 held;
 	touchPosition touch;
+
+
+	sf2d_texture * m_bg, * m_sprites;
 	sound * m_bgm;						// Sounds
 	sftd_font* font, *font2;			// Main Font, Font 2
 };

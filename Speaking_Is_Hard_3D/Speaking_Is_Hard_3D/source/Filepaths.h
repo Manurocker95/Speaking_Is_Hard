@@ -31,13 +31,10 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 #define SND_SFX_TAP "romfs:/resources/Sounds/SFX/tap.wav"
 
 /* Images */
-// Background
+// Background - Splash Screen BG included
+#define IMG_BACKGROUND "romfs:/resources/Art/Background.png"
 
-//Splash Screen BG
-#define IMG_SPLASHSCREEN "romfs:/resources/Art/splashScreen.png"
-
-// Sprites
-
-// Buttons
+// All the sprites
+#define IMG_SPRITES "romfs:/resources/Art/president.png"
 
 #endif

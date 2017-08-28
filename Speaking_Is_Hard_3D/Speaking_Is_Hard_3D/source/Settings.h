@@ -7,7 +7,7 @@
 
 // Version of our Homebrew and if we want to set a debugmode for us. We can disable it from here.
 #define VERSION "1 .0"
-#define DEBUGMODE false
+#define DEBUGMODE true
 
 //3D Configuration
 #define STEREOSCOPIC_3D_ACTIVATED true					// If 3D effect is activated
@@ -26,3 +26,4 @@
 #define TAPTEXTSIZE 40
 #define MESSAGESIZE 40
 
+#define TIMEPERPUZZLE 300
