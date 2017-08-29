@@ -34,6 +34,9 @@ President::President(int x, u16 y, sf2d_texture & sprite, bool multipleFrames, u
 	m_state = WALKING_RIGHT;
 	m_offsetFrameX = 0;
 	m_startingYOffset = 0;
+	m_timer = 0;
+	m_timeToSpeak = 12;
+	m_timeSpeaking = 300;
 	m_stage = 0;
 	m_moving = false;
 	m_sizeYPerFrame = sizeYPerFrame;
@@ -70,6 +73,17 @@ bool President::Update()
 		return true;
 	}
 
+	if (m_state == SPEAKING)
+	{
+		m_timer++;
+		if (m_timer > m_timeSpeaking)
+		{
+			m_timer = 0;
+			wait();
+			return false;
+		}
+	}
+
 	m_secondaryCounter++;
 
 	if (m_secondaryCounter > FRAMECOUNTERPRESIDENT)
@@ -99,6 +113,18 @@ bool President::Update()
 				moving(false, 2);
 			}
 		}
+		else if (m_state == STANDING)
+		{
+			m_timer++;
+
+			if (m_timer > m_timeToSpeak)
+			{
+				m_timer = 0;
+				m_timeToSpeak = 12;
+				speak();
+			}
+			
+		}
 
 	}
 
@@ -108,6 +134,32 @@ bool President::Update()
 	}
 
 	return false;
+}
+
+void President::speak()
+{
+	m_state = SPEAKING;
+	m_startingYOffset = 127;
+	m_currentFrame = 0;
+	m_sizePerFrame = 43;
+	m_sizeYPerFrame = 127;
+	m_numFrames = 4;
+
+}
+
+bool President::isSpeaking()
+{
+	return (m_state == SPEAKING);
+}
+
+bool President::isStanding()
+{
+	return (m_state == STANDING);
+}
+
+bool President::isWaiting()
+{
+	return (m_state == WAITING);
 }
 
 void President::moving(bool value, u16 dir)
@@ -141,6 +193,16 @@ void President::moving(bool value, u16 dir)
 		m_sizeYPerFrame = 127;
 		m_numFrames = 6;
 	}
+}
+
+void President::wait()
+{
+	m_state = WAITING;
+	m_startingYOffset = 381;
+	m_currentFrame = 0;
+	m_sizePerFrame = 43;
+	m_sizeYPerFrame = 127;
+	m_numFrames = 6;
 }
 
 void President::moveToCoord(int x, u16 y)
@@ -289,6 +351,8 @@ u16 President::getFrameSize()
 
 void President::reset()
 {
+	m_timer = 0;
+	m_timeToSpeak = 12;
 	m_x = m_originalX;
 	m_y = m_originalY;
 	m_currentFrame = 0;
@@ -298,6 +362,7 @@ void President::reset()
 	m_moving = false;
 	m_sizePerFrame = 20;
 	m_sizeYPerFrame = 26;
+	m_timeSpeaking = 300;
 	m_startingYOffset = 0;
 	m_stage = 0;
 	m_movement = PRESIDENTMOVEMENT;

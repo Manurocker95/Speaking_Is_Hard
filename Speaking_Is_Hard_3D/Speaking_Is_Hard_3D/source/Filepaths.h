@@ -22,6 +22,9 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 /* Save Data */
 #define DATA_FILE "sdmc:/3ds/data/SpeakingIsHard/data.sav"
 
+/* Sentences File */
+#define SENTENCE_FILE "romfs:/resources/Files/file.txt"
+
 /* Sounds */
 // Background Music
 #define SND_BGM_GAME  "romfs:/resources/Sounds/Music/game.wav"

@@ -44,16 +44,17 @@ void GameScreen::Start()
 	m_gameStarted = false;
 	m_inTransition = false;
 	m_exit = false;
-	m_fromTitle = false;
+	m_toTitle = false;
 	m_walking = false;
-	m_walkingToRight = false;
+	m_speaking = false;
 	m_score = 0;
 	m_maxTime = TIMEPERPUZZLE;
 	m_time = m_maxTime;
 	m_bgOpacity = 255;
+	m_dialogOpacity = 255;
 	m_scTimer = 0;
 	m_transitionState = OPENING;
-	
+	load_sentences(SENTENCE_FILE);
 
 	// We will use 2 channels for sounds: 1 = BGM, 2= Sound effects so they can be played at same time. You can set as channels as you want.
 	// We clear the channels
@@ -104,7 +105,7 @@ void GameScreen::Draw()
 			m_offset = CONFIG_3D_SLIDERSTATE * MULTIPLIER_3D;
 			sf2d_start_frame(GFX_TOP, GFX_RIGHT);
 			sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, 0, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
-			sf2d_draw_texture_part_blend(m_sprites, 70 - m_offset, 40, 696, 254,242, 155, RGBA8(255, 255, 255, m_bgOpacity));
+			sf2d_draw_texture_part_blend(m_sprites, 70 + m_offset, 40, 696, 254,242, 155, RGBA8(255, 255, 255, m_bgOpacity));
 			sf2d_end_frame();
 		}
 
@@ -112,6 +113,8 @@ void GameScreen::Draw()
 		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 		sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, HEIGHT, BOTTOM_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
 		
+		//sftd_draw_text(font, 20, 20, C_WHITE, 15, m_sentences.at(0).c_str());
+
 		if (!m_inTransition)
 		{
 			sftd_draw_text(font, 20, HEIGHT - 30, C_WHITE, 15, "Manurocker95 (C) 2017");
@@ -127,13 +130,24 @@ void GameScreen::Draw()
 	case GAME:
 		// Top Screen
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
+		
+		// Background
 		sf2d_draw_texture_part_blend(m_bg, 0, 0, 0, 480, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
 		
+		// President
 		m_president->Draw(0, RGBA8(255, 255, 255, m_bgOpacity));
 
+		// Table
 		sf2d_draw_texture_part_blend(m_sprites, 300, 50, 838, 133, 100, 121, RGBA8(255, 255, 255, m_bgOpacity));
 
+		// Seats
 		sf2d_draw_texture_part_blend(m_sprites, 0, 171, 485, 409, 453, 69, RGBA8(255, 255, 255, m_bgOpacity));
+
+		// Dialog
+		if (m_speaking)
+		{
+			sf2d_draw_texture_part_blend(m_sprites, 40, 7, 582, 129, 256, 125, RGBA8(255, 255, 255, m_dialogOpacity));
+		}
 
 		if (m_pause)
 		{
@@ -150,13 +164,24 @@ void GameScreen::Draw()
 			// We check the offset by the slider
 			m_offset = CONFIG_3D_SLIDERSTATE * MULTIPLIER_3D;
 			sf2d_start_frame(GFX_TOP, GFX_RIGHT);
+
+			// Background
 			sf2d_draw_texture_part_blend(m_bg, 0+m_offset, 0, 0, 480, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
 
+			// President
 			m_president->Draw(-m_offset/2, RGBA8(255, 255, 255, m_bgOpacity));
 
+			// Table
 			sf2d_draw_texture_part_blend(m_sprites, 300+m_offset/4, 50, 838, 133, 100, 121, RGBA8(255, 255, 255, m_bgOpacity));
 			
+			// Seats			
 			sf2d_draw_texture_part_blend(m_sprites, 0, 171, 485, 409, 453, 69, RGBA8(255, 255, 255, m_bgOpacity));
+
+			// Dialog
+			if (m_speaking)
+			{
+				sf2d_draw_texture_part_blend(m_sprites, 40+ m_offset / 2, 7, 582, 129, 256, 125, RGBA8(255, 255, 255, m_dialogOpacity));
+			}
 
 			if (m_pause)
 			{
@@ -250,7 +275,11 @@ void GameScreen::Update()
 					{
 						m_transitionState = STAY;
 						m_bgOpacity = 0;
-						m_screen = TITLE;
+
+						if (m_toTitle)
+							m_screen = TITLE;
+						else
+							m_screen = PUZZLE;
 					}
 
 					break;
@@ -280,6 +309,25 @@ void GameScreen::Update()
 				}
 			}
 		}
+
+		if (m_speaking)
+		{
+			// Stopped speaking
+			if (m_president->isWaiting())
+			{
+				m_speaking = false;
+				m_toTitle = true;
+				m_inTransition = true;
+			}
+		}
+		else
+		{
+			if (m_president->isSpeaking())
+			{
+				m_speaking = true;
+			}
+		}
+
 		break;
 	case END:
 		break;
@@ -315,8 +363,11 @@ void GameScreen::CheckInputs()
 		}
 		break;
 	case GAME:
+
 		if (hidKeysDown() & KEY_B) 
 		{
+			m_speaking = false;
+			m_toTitle = true;
 			m_inTransition = true;
 			m_president->moving(true, 1);
 		}
@@ -343,6 +394,39 @@ void GameScreen::CheckInputs()
 	}
 }
 
+void GameScreen::load_sentences(const char* path)
+{
+	FILE* f = fopen(path, "r");
+	if (f)
+	{
+		char mystring[100];
+		int sentence = 0;
+		while (fgets(mystring, sizeof(mystring), f))
+		{
+			int a = strlen(mystring);
+			if (mystring[a - 1] == '\n')
+			{
+				mystring[a - 1] = 0;
+				if (mystring[a - 2] == '\r')
+					mystring[a - 2] = 0;
+			}
+
+			//m_sentences.push_back(std::to_string(sentence));
+			m_sentences.push_back(mystring);
+			//puts(mystring);
+			sentence++;
+		}
+		
+		m_sentences.push_back("Aaaaaand... that's it.");
+		//printf(">>EOF<<\n");
+		fclose(f);
+	}
+	else
+	{
+		m_sentences.push_back("Can't load the sentence file.");
+	}
+}
+
 void GameScreen::EndGame()
 {
 
@@ -353,7 +437,7 @@ void GameScreen::ResetGame()
 	m_score = 0;
 	m_screen = GAME;
 	m_pause = false;
-	m_president->setX(0);
+	m_president->setX(-67);
 }
 
 void GameScreen::CheckScore()

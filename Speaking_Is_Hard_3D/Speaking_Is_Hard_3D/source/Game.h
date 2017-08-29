@@ -30,6 +30,8 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 #include <stdio.h>
 #include <vector>  //for std::vector
 #include <string>  //for std::string
+#include <stdio.h>
+#include <unistd.h>
 
 #include "font_ttf.h"			//Don't worry if it seems to have error here
 #include "font2_ttf.h"
@@ -60,6 +62,7 @@ public:
 	void ResetGame();
 	void goToTitle();
 	void EndGame();
+	void load_sentences(const char* path);
 
 private:
 
@@ -67,12 +70,13 @@ private:
 	bool m_gameStarted;
 	bool m_pause;						// Boolean for pausing the game
 	bool m_playedBefore;
-	bool m_fromTitle;
+	bool m_toTitle;
 	bool m_inTransition;
 	bool m_goToGame;
 	bool m_exit;
-	bool m_walkingToRight;
+	bool m_speaking;
 	bool m_walking;
+	
 	float m_offset;						// Offset for 3D
 
 	//
@@ -80,12 +84,12 @@ private:
 	//
 	u32 m_score, m_maxScore;			// Current score and Max 
 	u32 m_time, m_maxTime;
-	u32 m_bgOpacity;
+	u32 m_bgOpacity, m_dialogOpacity;
 	u32 held;
 	u32 m_scTimer;
 	touchPosition touch;
 	TRANSITION_STATE m_transitionState;
-
+	std::vector <std::string> m_sentences;
 	President * m_president;
 	sf2d_texture * m_bg, * m_sprites;
 	sound * m_bgm;						// Sounds
