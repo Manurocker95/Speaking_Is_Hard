@@ -54,9 +54,6 @@ void GameScreen::Start()
 	m_scTimer = 0;
 	m_transitionState = OPENING;
 	
-	m_xPresident = 67;//-67;
-	m_yPresident = 47;
-
 
 	// We will use 2 channels for sounds: 1 = BGM, 2= Sound effects so they can be played at same time. You can set as channels as you want.
 	// We clear the channels
@@ -72,6 +69,8 @@ void GameScreen::Start()
 
 	m_bg = sfil_load_PNG_file(IMG_BACKGROUND, SF2D_PLACE_RAM);
 	m_sprites = sfil_load_PNG_file(IMG_SPRITES, SF2D_PLACE_RAM);
+
+	m_president = new President(-67, 46, *m_sprites, true, 8, 67, 127);
 
 	// We load our sounds // PATH, CHANNEL, LOOP? -> // BGM plays with loop, but sfx just one time
 	m_bgm = new sound(SND_BGM_GAME, 1, true);		
@@ -129,8 +128,11 @@ void GameScreen::Draw()
 		// Top Screen
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
 		sf2d_draw_texture_part_blend(m_bg, 0, 0, 0, 480, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
+		
+		m_president->Draw(0, RGBA8(255, 255, 255, m_bgOpacity));
 
 		sf2d_draw_texture_part_blend(m_sprites, 300, 50, 838, 133, 100, 121, RGBA8(255, 255, 255, m_bgOpacity));
+		
 
 		if (m_pause)
 		{
@@ -148,7 +150,10 @@ void GameScreen::Draw()
 			m_offset = CONFIG_3D_SLIDERSTATE * MULTIPLIER_3D;
 			sf2d_start_frame(GFX_TOP, GFX_RIGHT);
 			sf2d_draw_texture_part_blend(m_bg, 0, 0, 0, 480, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
-			sf2d_draw_texture_part_blend(m_sprites, 300, 50, 838, 133, 100, 121, RGBA8(255, 255, 255, m_bgOpacity));
+
+			m_president->Draw(0-m_offset/4, RGBA8(255, 255, 255, m_bgOpacity));
+
+			sf2d_draw_texture_part_blend(m_sprites, 300-m_offset/2, 50, 838, 133, 100, 121, RGBA8(255, 255, 255, m_bgOpacity));
 
 			if (m_pause)
 			{
@@ -226,44 +231,50 @@ void GameScreen::Update()
 		}
 		break;
 	case GAME:
-		if (!m_pause && m_inTransition)
+		if (!m_pause)
 		{
-			switch (m_transitionState)
+			m_president->Update();
+
+			if (m_inTransition)
 			{
-			case OPENING:
-
-				m_bgOpacity -= 3;
-
-				if (m_bgOpacity <= 0)
+				switch (m_transitionState)
 				{
-					m_transitionState = STAY;
-					m_bgOpacity = 0;
-					m_screen = TITLE;
+				case OPENING:
+
+					m_bgOpacity -= 3;
+
+					if (m_bgOpacity <= 0)
+					{
+						m_transitionState = STAY;
+						m_bgOpacity = 0;
+						m_screen = TITLE;
+					}
+
+					break;
+				case STAY:
+
+					m_scTimer += 5;
+
+					if (m_scTimer >= 300)
+					{
+						m_transitionState = ENDING;
+						m_president->moving(true, 0);
+					}
+
+					break;
+				case ENDING:
+
+					m_bgOpacity += 3;
+
+					if (m_bgOpacity >= 255)
+					{
+						m_bgOpacity = 255;
+						m_transitionState = OPENING;
+						m_inTransition = false;
+						m_scTimer = 0;
+					}
+					break;
 				}
-
-				break;
-			case STAY:
-
-				m_scTimer += 5;
-
-				if (m_scTimer >= 300)
-				{
-					m_transitionState = ENDING;
-				}
-
-				break;
-			case ENDING:
-
-				m_bgOpacity += 3;
-
-				if (m_bgOpacity >= 255)
-				{
-					m_bgOpacity = 255;
-					m_transitionState = OPENING;
-					m_inTransition = false;
-					m_scTimer = 0;
-				}
-				break;
 			}
 		}
 		break;
@@ -304,6 +315,7 @@ void GameScreen::CheckInputs()
 		if (hidKeysDown() & KEY_B) 
 		{
 			m_inTransition = true;
+			m_president->moving(true, 1);
 		}
 
 		if (hidKeysDown() & KEY_START)

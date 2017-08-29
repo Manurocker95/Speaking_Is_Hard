@@ -19,7 +19,7 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 #ifndef _PRESIDENT_H
 #define _PRESIDENT_H
 
-#define FRAMECOUNTERPRESIDENT 5
+#define FRAMECOUNTERPRESIDENT 8
 
 #include "sf2d.h"
 #include "sfil.h"
@@ -29,10 +29,10 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 class President
 {
 public:
-	enum MState { SPEAKING, WALKING_RIGHT, WALKING_LEFT, NONE};
+	enum MState { SPEAKING, STANDING, WALKING_RIGHT, WALKING_LEFT, NONE};
 	
 	President();
-	President(int x, u16 y, sf2d_texture* sprite, bool multipleFrames, u16 numFrames, u16 sizePerFrame, u16 sizeYPerFrame);
+	President(int x, u16 y, sf2d_texture & sprite, bool multipleFrames, u16 numFrames, u16 sizePerFrame, u16 sizeYPerFrame);
 	~President();
 
 	void Draw(float offset, u32 opacity);
@@ -44,8 +44,8 @@ public:
 	void move(int value, u16 dir);
 	void moveToCoord(int x, u16 y);
 	sf2d_texture* getSprite();
-	void setSprite(sf2d_texture* sprite);
-	void setTotallyNewSprite(sf2d_texture* sprite, u16 numFrames, u16 sizePerFrame, u16 sizeYPerFrame);
+	void setSprite(sf2d_texture & sprite);
+	void setTotallyNewSprite(sf2d_texture& sprite, u16 numFrames, u16 sizePerFrame, u16 sizeYPerFrame);
 	void end();
 	MState getState();
 	void setState(MState value);
@@ -55,6 +55,8 @@ public:
 	u16 getFrameSize();
 	void reset();
 	u16 getSizeYPerFrame();
+
+	void moving(bool value, u16 dir);
 
 private:
 
@@ -71,7 +73,7 @@ private:
 	u32 m_movement;
 	bool m_moving;
 	bool m_multipleFrames;
-	sf2d_texture * m_sprite;
+	sf2d_texture & m_sprite;
 	MState m_state;
 
 };

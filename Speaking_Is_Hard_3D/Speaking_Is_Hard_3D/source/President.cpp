@@ -20,19 +20,12 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 >    See LICENSE for information.
 */
 
-//Constructor con valores por defecto
-President::President()
-{
-
-}
-
-President::President(int x, u16 y, sf2d_texture * sprite, bool multipleFrames, u16 numFrames, u16 sizePerFrame, u16 sizeYPerFrame)
+President::President(int x, u16 y, sf2d_texture & sprite, bool multipleFrames, u16 numFrames, u16 sizePerFrame, u16 sizeYPerFrame) : m_sprite(sprite)
 {
 	m_x = x;
 	m_originalX = x;
 	m_y = y;
 	m_originalY = y;
-	m_sprite = sprite;
 	m_multipleFrames = multipleFrames;
 	m_numFrames = numFrames;
 	m_sizePerFrame = sizePerFrame;
@@ -50,7 +43,7 @@ President::President(int x, u16 y, sf2d_texture * sprite, bool multipleFrames, u
 
 President::~President()
 {
-	delete m_sprite;
+	//delete m_sprite;
 }
 
 void President::Draw(float offset, u32 opacity)
@@ -62,11 +55,11 @@ void President::Draw(float offset, u32 opacity)
 
 	if (m_multipleFrames)
 	{
-		sf2d_draw_texture_part_blend(m_sprite, m_x - offset, m_y, m_currentFrame*m_sizePerFrame, m_startingYOffset, m_sizePerFrame, m_sizeYPerFrame, opacity);
+		sf2d_draw_texture_part_blend(&m_sprite, m_x - offset, m_y, m_currentFrame*m_sizePerFrame, m_startingYOffset, m_sizePerFrame, m_sizeYPerFrame, opacity);
 	}
 	else
 	{
-		sf2d_draw_texture(m_sprite, m_x, m_y);
+		sf2d_draw_texture(&m_sprite, m_x, m_y);
 	}
 }
 
@@ -85,6 +78,30 @@ bool President::Update()
 		{
 			m_currentFrame++;
 			m_secondaryCounter = 0;
+
+			if (m_state == WALKING_RIGHT)
+			{
+				if (m_x < 310)
+				{
+					m_x += PRESIDENTMOVEMENT;
+				}
+				else
+				{
+					moving(false, 2);
+				}
+			}
+			else if (m_state == WALKING_LEFT)
+			{
+				if (m_x > -67)
+				{
+					m_x -= PRESIDENTMOVEMENT;
+				}
+				else
+				{
+					moving(false, 2);
+				}
+			}
+
 		}
 
 		if (m_currentFrame >= m_numFrames)
@@ -94,6 +111,32 @@ bool President::Update()
 	}
 
 	return false;
+}
+
+void President::moving(bool value, u16 dir)
+{
+	m_moving = value;
+
+	if (dir == 0)
+	{
+		m_state = WALKING_RIGHT;
+		m_startingYOffset = 0;
+		m_currentFrame = 0;
+		m_sizePerFrame = 67;
+		m_sizeYPerFrame = 127;
+	}
+	else if (dir == 1)
+	{
+		m_state = WALKING_LEFT;
+		m_startingYOffset = 256;
+		m_currentFrame = 0;
+		m_sizePerFrame = 67;
+		m_sizeYPerFrame = 127;
+	}
+	else
+	{
+		m_state = STANDING;
+	}
 }
 
 void President::moveToCoord(int x, u16 y)
@@ -165,15 +208,15 @@ void President::move(int value, u16 dir)
 
 sf2d_texture* President::getSprite()
 {
-	return m_sprite;
+	return &m_sprite;
 }
 
-void President::setSprite(sf2d_texture* sprite)
+void President::setSprite(sf2d_texture & sprite)
 {
 	m_sprite = sprite;
 }
 
-void President::setTotallyNewSprite(sf2d_texture* sprite, u16 numFrames, u16 sizePerFrame, u16 sizeYPerFrame)
+void President::setTotallyNewSprite(sf2d_texture & sprite, u16 numFrames, u16 sizePerFrame, u16 sizeYPerFrame)
 {
 	m_sprite = sprite;
 	m_currentFrame = 0;
@@ -205,7 +248,7 @@ u16 President::getY()
 
 void President::end()
 {
-	sf2d_free_texture(m_sprite);
+	//sf2d_free_texture(&m_sprite);
 	delete(this);
 }
 

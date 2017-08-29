@@ -95,9 +95,11 @@ Game.o: \
  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/sound.h \
  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/scene.h \
  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Filepaths.h \
+ d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/president.h \
+ d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/filepaths.h \
+ d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Settings.h \
  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SceneManager.h \
- d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SplashScreen.h \
- d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Settings.h
+ d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SplashScreen.h
 
 d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.h:
 
@@ -291,8 +293,12 @@ d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/scene.
 
 d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Filepaths.h:
 
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/president.h:
+
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/filepaths.h:
+
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Settings.h:
+
 d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SceneManager.h:
 
 d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/SplashScreen.h:
-
-d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Settings.h:

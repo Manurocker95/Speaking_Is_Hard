@@ -35,6 +35,7 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 #include "font2_ttf.h"
 #include "sound.h"
 #include "scene.h"
+#include "president.h"
 #include "SceneManager.h"
 
 #include "Settings.h"
@@ -73,7 +74,6 @@ private:
 	bool m_walkingToRight;
 	bool m_walking;
 	float m_offset;						// Offset for 3D
-	int m_xPresident, m_yPresident;
 
 	//
 
@@ -86,6 +86,7 @@ private:
 	touchPosition touch;
 	TRANSITION_STATE m_transitionState;
 
+	President * m_president;
 	sf2d_texture * m_bg, * m_sprites;
 	sound * m_bgm;						// Sounds
 	sftd_font* font, *font2;			// Main Font, Font 2
