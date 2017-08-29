@@ -104,7 +104,7 @@ void GameScreen::Draw()
 			m_offset = CONFIG_3D_SLIDERSTATE * MULTIPLIER_3D;
 			sf2d_start_frame(GFX_TOP, GFX_RIGHT);
 			sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, 0, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
-			sf2d_draw_texture_part_blend(m_sprites, 70 - m_offset, 60, 696, 254,242, 155, RGBA8(255, 255, 255, m_bgOpacity));
+			sf2d_draw_texture_part_blend(m_sprites, 70 - m_offset, 40, 696, 254,242, 155, RGBA8(255, 255, 255, m_bgOpacity));
 			sf2d_end_frame();
 		}
 
@@ -132,7 +132,8 @@ void GameScreen::Draw()
 		m_president->Draw(0, RGBA8(255, 255, 255, m_bgOpacity));
 
 		sf2d_draw_texture_part_blend(m_sprites, 300, 50, 838, 133, 100, 121, RGBA8(255, 255, 255, m_bgOpacity));
-		
+
+		sf2d_draw_texture_part_blend(m_sprites, 0, 171, 485, 409, 453, 69, RGBA8(255, 255, 255, m_bgOpacity));
 
 		if (m_pause)
 		{
@@ -149,11 +150,13 @@ void GameScreen::Draw()
 			// We check the offset by the slider
 			m_offset = CONFIG_3D_SLIDERSTATE * MULTIPLIER_3D;
 			sf2d_start_frame(GFX_TOP, GFX_RIGHT);
-			sf2d_draw_texture_part_blend(m_bg, 0, 0, 0, 480, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
+			sf2d_draw_texture_part_blend(m_bg, 0+m_offset, 0, 0, 480, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
 
-			m_president->Draw(0-m_offset/4, RGBA8(255, 255, 255, m_bgOpacity));
+			m_president->Draw(-m_offset/2, RGBA8(255, 255, 255, m_bgOpacity));
 
-			sf2d_draw_texture_part_blend(m_sprites, 300-m_offset/2, 50, 838, 133, 100, 121, RGBA8(255, 255, 255, m_bgOpacity));
+			sf2d_draw_texture_part_blend(m_sprites, 300+m_offset/4, 50, 838, 133, 100, 121, RGBA8(255, 255, 255, m_bgOpacity));
+			
+			sf2d_draw_texture_part_blend(m_sprites, 0, 171, 485, 409, 453, 69, RGBA8(255, 255, 255, m_bgOpacity));
 
 			if (m_pause)
 			{
@@ -349,6 +352,8 @@ void GameScreen::ResetGame()
 {
 	m_score = 0;
 	m_screen = GAME;
+	m_pause = false;
+	m_president->setX(0);
 }
 
 void GameScreen::CheckScore()

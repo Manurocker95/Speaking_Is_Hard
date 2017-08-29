@@ -1,41 +1,4 @@
-﻿  Game.cpp
-  arm-none-eabi-g++ -MMD -MP -MF /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build/Game.d -g -Wall -O2 -mword-relocations -fomit-frame-pointer -ffunction-sections -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/include -I/c/devkitPro/libctru/include -I/c/devkitPro/portlibs/armv6k/include -I/c/devkitPro/portlibs/3ds/include -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build -DARM11 -D_3DS -fno-rtti -fno-exceptions -std=gnu++11 -c /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp -o Game.o 
-  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp: In destructor 'GameScreen::~GameScreen()':
-d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(32,9): warning G90E9E4C3: possible problem detected in invocation of delete operator: [-Wdelete-incomplete]
-    delete font;
-           ^~~~
-d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(32,9): warning G1DA8B262: invalid use of incomplete type 'struct sftd_font'
-  In file included from d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.h:24:0,
-                   from d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp:19:
-  c:/devkitPro/libctru/include/sftd.h:22:16: note: forward declaration of 'struct sftd_font'
-   typedef struct sftd_font sftd_font;
-                  ^~~~~~~~~
-  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp:32:9: note: neither the destructor nor the class-specific operator delete will be called, even if they are declared when the class is defined
-    delete font;
-           ^~~~
-d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(33,9): warning G90E9E4C3: possible problem detected in invocation of delete operator: [-Wdelete-incomplete]
-    delete font2;
-           ^~~~~
-d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(33,9): warning G1DA8B262: invalid use of incomplete type 'struct sftd_font'
-  In file included from d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.h:24:0,
-                   from d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp:19:
-  c:/devkitPro/libctru/include/sftd.h:22:16: note: forward declaration of 'struct sftd_font'
-   typedef struct sftd_font sftd_font;
-                  ^~~~~~~~~
-  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp:33:9: note: neither the destructor nor the class-specific operator delete will be called, even if they are declared when the class is defined
-    delete font2;
-           ^~~~~
-  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp: In member function 'virtual void GameScreen::Draw()':
-d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(91,9): warning GB774866A: enumeration value 'PUZZLE' not handled in switch [-Wswitch]
-    switch (m_screen)
-           ^
-  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp: In member function 'virtual void GameScreen::Update()':
-d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(190,9): warning GB774866A: enumeration value 'PUZZLE' not handled in switch [-Wswitch]
-    switch (m_screen)
-           ^
-  d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp: In member function 'virtual void GameScreen::CheckInputs()':
-d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(292,9): warning GB774866A: enumeration value 'PUZZLE' not handled in switch [-Wswitch]
-    switch (m_screen)
-           ^
+﻿  President.cpp
+  arm-none-eabi-g++ -MMD -MP -MF /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build/President.d -g -Wall -O2 -mword-relocations -fomit-frame-pointer -ffunction-sections -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/include -I/c/devkitPro/libctru/include -I/c/devkitPro/portlibs/armv6k/include -I/c/devkitPro/portlibs/3ds/include -I/d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/build -DARM11 -D_3DS -fno-rtti -fno-exceptions -std=gnu++11 -c /d/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/President.cpp -o President.o 
   linking Speaking_Is_Hard_3D.elf
   built ... Speaking_Is_Hard_3D.3dsx

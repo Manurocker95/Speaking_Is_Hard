@@ -70,44 +70,41 @@ bool President::Update()
 		return true;
 	}
 
-	if (m_moving)
+	m_secondaryCounter++;
+
+	if (m_secondaryCounter > FRAMECOUNTERPRESIDENT)
 	{
-		m_secondaryCounter++;
+		m_currentFrame++;
+		m_secondaryCounter = 0;
 
-		if (m_secondaryCounter > FRAMECOUNTERPRESIDENT)
+		if (m_state == WALKING_RIGHT)
 		{
-			m_currentFrame++;
-			m_secondaryCounter = 0;
-
-			if (m_state == WALKING_RIGHT)
+			if (m_x < 320)
 			{
-				if (m_x < 310)
-				{
-					m_x += PRESIDENTMOVEMENT;
-				}
-				else
-				{
-					moving(false, 2);
-				}
+				m_x += PRESIDENTMOVEMENT;
 			}
-			else if (m_state == WALKING_LEFT)
+			else
 			{
-				if (m_x > -67)
-				{
-					m_x -= PRESIDENTMOVEMENT;
-				}
-				else
-				{
-					moving(false, 2);
-				}
+				moving(false, 2);
 			}
-
+		}
+		else if (m_state == WALKING_LEFT)
+		{
+			if (m_x > -67)
+			{
+				m_x -= PRESIDENTMOVEMENT;
+			}
+			else
+			{
+				moving(false, 2);
+			}
 		}
 
-		if (m_currentFrame >= m_numFrames)
-		{
-			m_currentFrame = 0;
-		}
+	}
+
+	if (m_currentFrame >= m_numFrames)
+	{
+		m_currentFrame = 0;
 	}
 
 	return false;
@@ -124,6 +121,7 @@ void President::moving(bool value, u16 dir)
 		m_currentFrame = 0;
 		m_sizePerFrame = 67;
 		m_sizeYPerFrame = 127;
+		m_numFrames = 8;
 	}
 	else if (dir == 1)
 	{
@@ -132,10 +130,16 @@ void President::moving(bool value, u16 dir)
 		m_currentFrame = 0;
 		m_sizePerFrame = 67;
 		m_sizeYPerFrame = 127;
+		m_numFrames = 8;
 	}
 	else
 	{
 		m_state = STANDING;
+		m_startingYOffset = 381;
+		m_currentFrame = 0;
+		m_sizePerFrame = 43;
+		m_sizeYPerFrame = 127;
+		m_numFrames = 6;
 	}
 }
 
