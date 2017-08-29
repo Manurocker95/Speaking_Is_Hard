@@ -6,7 +6,7 @@
 #define HEIGHT 240
 
 // Version of our Homebrew and if we want to set a debugmode for us. We can disable it from here.
-#define VERSION "1 .0"
+#define VERSION "1.0"
 #define DEBUGMODE true
 
 //3D Configuration
@@ -27,3 +27,4 @@
 #define MESSAGESIZE 40
 
 #define TIMEPERPUZZLE 300
+#define PRESIDENTMOVEMENT 3

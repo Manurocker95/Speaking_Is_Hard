@@ -100,6 +100,7 @@
   <ItemGroup>
     <ClInclude Include="source\Filepaths.h" />
     <ClInclude Include="source\Game.h" />
+    <ClInclude Include="source\president.h" />
     <ClInclude Include="source\scene.h" />
     <ClInclude Include="source\SceneManager.h" />
     <ClInclude Include="source\Settings.h" />
@@ -109,6 +110,7 @@
   <ItemGroup>
     <ClCompile Include="source\Game.cpp" />
     <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\President.cpp" />
     <ClCompile Include="source\SceneManager.cpp" />
     <ClCompile Include="source\sound.cpp" />
     <ClCompile Include="source\SplashScreen.cpp" />

@@ -31,6 +31,8 @@ GameScreen::~GameScreen()
 	delete m_bgm;
 	delete font;
 	delete font2;
+	delete m_bg;
+	delete m_sprites;
 
 }
 
@@ -40,10 +42,21 @@ void GameScreen::Start()
 	m_pause = false;
 	m_playedBefore = false;
 	m_gameStarted = false;
+	m_inTransition = false;
+	m_exit = false;
+	m_fromTitle = false;
+	m_walking = false;
+	m_walkingToRight = false;
 	m_score = 0;
 	m_maxTime = TIMEPERPUZZLE;
 	m_time = m_maxTime;
 	m_bgOpacity = 255;
+	m_scTimer = 0;
+	m_transitionState = OPENING;
+	
+	m_xPresident = 67;//-67;
+	m_yPresident = 47;
+
 
 	// We will use 2 channels for sounds: 1 = BGM, 2= Sound effects so they can be played at same time. You can set as channels as you want.
 	// We clear the channels
@@ -69,7 +82,6 @@ void GameScreen::Start()
 
 void GameScreen::goToTitle()
 {
-	ResetGame();
 	m_screen = TITLE;
 }
 
@@ -83,7 +95,7 @@ void GameScreen::Draw()
 		// Top Screen
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
 		sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, 0, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
-		sf2d_draw_texture_part(m_sprites, 70, 40, 696, 254, 242, 155);
+		sf2d_draw_texture_part_blend(m_sprites, 70, 40, 696, 254, 242, 155, RGBA8(255, 255, 255, m_bgOpacity));
 		sf2d_end_frame();
 
 		// If we have activated 3D in Settings
@@ -93,7 +105,7 @@ void GameScreen::Draw()
 			m_offset = CONFIG_3D_SLIDERSTATE * MULTIPLIER_3D;
 			sf2d_start_frame(GFX_TOP, GFX_RIGHT);
 			sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, 0, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
-			sf2d_draw_texture_part(m_sprites, 70 - m_offset, 60, 696, 254,242, 155);
+			sf2d_draw_texture_part_blend(m_sprites, 70 - m_offset, 60, 696, 254,242, 155, RGBA8(255, 255, 255, m_bgOpacity));
 			sf2d_end_frame();
 		}
 
@@ -101,16 +113,67 @@ void GameScreen::Draw()
 		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 		sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, HEIGHT, BOTTOM_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
 		
-		sftd_draw_text(font, 20, HEIGHT - 30, C_WHITE, 15, "Manurocker95 (C) 2017");
-		sftd_draw_text(font, 230, HEIGHT - 30, C_WHITE, 15, "VERSION: ");
-		sftd_draw_text(font, 280, HEIGHT - 30, C_WHITE, 15, VERSION);
+		if (!m_inTransition)
+		{
+			sftd_draw_text(font, 20, HEIGHT - 30, C_WHITE, 15, "Manurocker95 (C) 2017");
+			sftd_draw_text(font, 230, HEIGHT - 30, C_WHITE, 15, "VERSION: ");
+			sftd_draw_text(font, 280, HEIGHT - 30, C_WHITE, 15, VERSION);
 
-		if (DEBUGMODE)
-			sftd_draw_text(font, 230, 8, C_WHITE, 15, "DEBUG MODE");
+			if (DEBUGMODE)
+				sftd_draw_text(font, 230, 8, C_WHITE, 15, "DEBUG MODE");
+		}
 
 		sf2d_end_frame();
 		break;
 	case GAME:
+		// Top Screen
+		sf2d_start_frame(GFX_TOP, GFX_LEFT);
+		sf2d_draw_texture_part_blend(m_bg, 0, 0, 0, 480, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
+
+		sf2d_draw_texture_part_blend(m_sprites, 300, 50, 838, 133, 100, 121, RGBA8(255, 255, 255, m_bgOpacity));
+
+		if (m_pause)
+		{
+			sf2d_draw_rectangle(0, 0, 420, 240, RGBA8(0x00, 0x00, 0x00, 125));
+			sftd_draw_text(font2, 130, HEIGHT / 2 - 50, C_BLUE, 30, "PAUSE");
+			sftd_draw_text(font, 100, HEIGHT / 2 - 10, C_BLUE, 15, "Tap or press Start to Resume the game");
+		}
+
+		sf2d_end_frame();
+
+		// If we have activated 3D in Settings
+		if (STEREOSCOPIC_3D_ACTIVATED)
+		{
+			// We check the offset by the slider
+			m_offset = CONFIG_3D_SLIDERSTATE * MULTIPLIER_3D;
+			sf2d_start_frame(GFX_TOP, GFX_RIGHT);
+			sf2d_draw_texture_part_blend(m_bg, 0, 0, 0, 480, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
+			sf2d_draw_texture_part_blend(m_sprites, 300, 50, 838, 133, 100, 121, RGBA8(255, 255, 255, m_bgOpacity));
+
+			if (m_pause)
+			{
+				sf2d_draw_rectangle(0 - m_offset, 0, 420, 240, RGBA8(0x00, 0x00, 0x00, 125));
+				sftd_draw_text(font2, 130 - m_offset, HEIGHT / 2 - 50, C_BLUE, 30, "PAUSE");
+				sftd_draw_text(font, 100 - m_offset, HEIGHT / 2 - 10, C_BLUE, 15, "Tap or press Start to Resume the game");
+			}
+
+			sf2d_end_frame();
+		}
+
+		// Bottom Screen
+		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+
+		if (!m_inTransition)
+		{
+			sftd_draw_text(font, 20, HEIGHT - 30, C_WHITE, 15, "Manurocker95 (C) 2017");
+			sftd_draw_text(font, 230, HEIGHT - 30, C_WHITE, 15, "VERSION: ");
+			sftd_draw_text(font, 280, HEIGHT - 30, C_WHITE, 15, VERSION);
+
+			if (DEBUGMODE)
+				sftd_draw_text(font, 230, 8, C_WHITE, 15, "DEBUG MODE");
+		}
+
+		sf2d_end_frame();
 		break;
 	case END:
 		break;
@@ -119,7 +182,94 @@ void GameScreen::Draw()
 
 void GameScreen::Update()
 {
-	
+	switch (m_screen)
+	{
+	case TITLE:
+		if (m_inTransition)
+		{
+			switch (m_transitionState)
+			{
+			case OPENING:
+
+				m_bgOpacity -= 3;
+
+				if (m_bgOpacity <= 0)
+				{
+					m_transitionState = STAY;
+					m_bgOpacity = 0;
+					ResetGame();
+				}
+
+				break;
+			case STAY:
+
+				m_scTimer += 5;
+
+				if (m_scTimer >= 300)
+				{
+					m_transitionState = ENDING;
+				}
+
+				break;
+			case ENDING:
+
+				m_bgOpacity += 3;
+
+				if (m_bgOpacity >= 255)
+				{
+					m_bgOpacity = 255;
+					m_transitionState = OPENING;
+					m_inTransition = false;
+				}
+				break;
+			}
+		}
+		break;
+	case GAME:
+		if (!m_pause && m_inTransition)
+		{
+			switch (m_transitionState)
+			{
+			case OPENING:
+
+				m_bgOpacity -= 3;
+
+				if (m_bgOpacity <= 0)
+				{
+					m_transitionState = STAY;
+					m_bgOpacity = 0;
+					m_screen = TITLE;
+				}
+
+				break;
+			case STAY:
+
+				m_scTimer += 5;
+
+				if (m_scTimer >= 300)
+				{
+					m_transitionState = ENDING;
+				}
+
+				break;
+			case ENDING:
+
+				m_bgOpacity += 3;
+
+				if (m_bgOpacity >= 255)
+				{
+					m_bgOpacity = 255;
+					m_transitionState = OPENING;
+					m_inTransition = false;
+					m_scTimer = 0;
+				}
+				break;
+			}
+		}
+		break;
+	case END:
+		break;
+	}
 }
 
 void GameScreen::CheckInputs()
@@ -131,22 +281,48 @@ void GameScreen::CheckInputs()
 	switch (m_screen)
 	{
 	case TITLE:
-
+		if (hidKeysDown() & KEY_A)
+		{
+			m_inTransition = true;
+			return;
+		}
+		if (hidKeysDown() & KEY_TOUCH)
+		{
+			hidTouchRead(&touch);
+			if ((touch.px > 115 && touch.px < 225) && (touch.py > 50 && touch.py < 86))
+			{
+				m_inTransition = true;
+				return;
+			}
+			if ((touch.px > 120 && touch.px < 205) && (touch.py > 120 && touch.py < 156))
+			{
+				m_exit = true;
+			}
+		}
 		break;
 	case GAME:
+		if (hidKeysDown() & KEY_B) 
+		{
+			m_inTransition = true;
+		}
+
+		if (hidKeysDown() & KEY_START)
+		{
+			m_pause = !m_pause;
+		}
+
 		break;
 	case END:
 		break;
 	}
 
-
-	if (hidKeysDown() & KEY_START)
-	{
-		m_pause = !m_pause;
-	}
-
 	// We go to tile when pressing Select
 	if ((hidKeysDown() & KEY_SELECT))
+	{
+		m_exit = true;
+	}
+
+	if (m_exit)
 	{
 		SceneManager::instance()->exitGame();
 	}
@@ -159,7 +335,8 @@ void GameScreen::EndGame()
 
 void GameScreen::ResetGame()
 {
-	
+	m_score = 0;
+	m_screen = GAME;
 }
 
 void GameScreen::CheckScore()

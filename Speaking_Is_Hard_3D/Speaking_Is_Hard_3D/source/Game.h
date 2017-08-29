@@ -46,7 +46,8 @@ class GameScreen : public Scene
 
 public:
 
-	enum SCREEN {TITLE, GAME, END};
+	enum SCREEN {TITLE, GAME, END, PUZZLE };
+	enum TRANSITION_STATE { OPENING, STAY, ENDING };
 
 	GameScreen(u32 score);				// Constructor
 	~GameScreen();						// Destructor
@@ -65,13 +66,25 @@ private:
 	bool m_gameStarted;
 	bool m_pause;						// Boolean for pausing the game
 	bool m_playedBefore;
+	bool m_fromTitle;
+	bool m_inTransition;
+	bool m_goToGame;
+	bool m_exit;
+	bool m_walkingToRight;
+	bool m_walking;
 	float m_offset;						// Offset for 3D
+	int m_xPresident, m_yPresident;
+
+	//
+
+	//
 	u32 m_score, m_maxScore;			// Current score and Max 
 	u32 m_time, m_maxTime;
 	u32 m_bgOpacity;
 	u32 held;
+	u32 m_scTimer;
 	touchPosition touch;
-
+	TRANSITION_STATE m_transitionState;
 
 	sf2d_texture * m_bg, * m_sprites;
 	sound * m_bgm;						// Sounds
