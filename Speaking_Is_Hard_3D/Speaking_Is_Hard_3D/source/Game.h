@@ -71,6 +71,7 @@ private:
 	bool m_pause;						// Boolean for pausing the game
 	bool m_playedBefore;
 	bool m_toTitle;
+	bool m_fromPuzzle;
 	bool m_inTransition;
 	bool m_goToGame;
 	bool m_exit;
@@ -87,6 +88,7 @@ private:
 	u32 m_bgOpacity, m_dialogOpacity;
 	u32 held;
 	u32 m_scTimer;
+	u16 m_level;
 	touchPosition touch;
 	TRANSITION_STATE m_transitionState;
 	std::vector <std::string> m_sentences;

@@ -29,7 +29,7 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 class President
 {
 public:
-	enum MState { SPEAKING, STANDING, WAITING, WALKING_RIGHT, WALKING_LEFT, NONE};
+	enum MState { SPEAKING, STANDING, WAITING, MISTAKE, WALKING_RIGHT, WALKING_LEFT, NONE};
 	
 	President();
 	President(int x, u16 y, sf2d_texture & sprite, bool multipleFrames, u16 numFrames, u16 sizePerFrame, u16 sizeYPerFrame);

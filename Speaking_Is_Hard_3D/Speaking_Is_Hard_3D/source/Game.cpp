@@ -47,12 +47,14 @@ void GameScreen::Start()
 	m_toTitle = false;
 	m_walking = false;
 	m_speaking = false;
+	m_fromPuzzle = false;
 	m_score = 0;
 	m_maxTime = TIMEPERPUZZLE;
 	m_time = m_maxTime;
 	m_bgOpacity = 255;
 	m_dialogOpacity = 255;
 	m_scTimer = 0;
+	m_level = 0;
 	m_transitionState = OPENING;
 	load_sentences(SENTENCE_FILE);
 
@@ -195,6 +197,79 @@ void GameScreen::Draw()
 
 		// Bottom Screen
 		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+		
+		if (!m_inTransition)
+		{
+	
+			sftd_draw_text(font, 20, HEIGHT - 30, C_WHITE, 15, "Manurocker95 (C) 2017");
+			sftd_draw_text(font, 230, HEIGHT - 30, C_WHITE, 15, "VERSION: ");
+			sftd_draw_text(font, 280, HEIGHT - 30, C_WHITE, 15, VERSION);
+
+			if (DEBUGMODE)
+				sftd_draw_text(font, 230, 8, C_WHITE, 15, "DEBUG MODE");
+		}
+
+		sf2d_end_frame();
+		break;
+	case PUZZLE:
+		// Top Screen
+		sf2d_start_frame(GFX_TOP, GFX_LEFT);
+
+		// Background
+		sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, 480, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
+
+		// Reference image of the puzzle
+		sf2d_draw_texture_part_blend(m_sprites, 137, 56, m_level*133, 508, 133, 133, RGBA8(255, 255, 255, m_bgOpacity));
+
+		//y=
+
+		if (!m_inTransition)
+		{
+			sftd_draw_text(font, 20, 5, C_WHITE, 30, "TIME:");
+			sftd_draw_text(font, 80, 5, C_WHITE, 30, "100");
+		}
+
+		if (m_pause)
+		{
+			sf2d_draw_rectangle(0, 0, 420, 240, RGBA8(0x00, 0x00, 0x00, 125));
+			sftd_draw_text(font2, 130, HEIGHT / 2 - 50, C_BLUE, 30, "PAUSE");
+			sftd_draw_text(font, 100, HEIGHT / 2 - 10, C_BLUE, 15, "Tap or press Start to Resume the game");
+		}
+
+		sf2d_end_frame();
+
+		// If we have activated 3D in Settings
+		if (STEREOSCOPIC_3D_ACTIVATED)
+		{
+			// We check the offset by the slider
+			m_offset = CONFIG_3D_SLIDERSTATE * MULTIPLIER_3D;
+			sf2d_start_frame(GFX_TOP, GFX_RIGHT);
+
+			// Background
+			sf2d_draw_texture_part_blend(m_bg, 0 + m_offset, 0, TOP_WIDTH, 480, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
+
+			// Reference image of the puzzle
+			sf2d_draw_texture_part_blend(m_sprites, 137+m_offset/2, 56, m_level * 133, 508, 133, 133, RGBA8(255, 255, 255, m_bgOpacity));
+
+			if (!m_inTransition)
+			{
+				sftd_draw_text(font, 20 + m_offset / 2, 5, C_WHITE, 30, "TIME:");
+				sftd_draw_text(font, 80 + m_offset / 2, 5, C_WHITE, 30, "100");
+			}
+
+			if (m_pause)
+			{
+				sf2d_draw_rectangle(0 - m_offset, 0, 420, 240, RGBA8(0x00, 0x00, 0x00, 125));
+				sftd_draw_text(font2, 130 - m_offset, HEIGHT / 2 - 50, C_BLUE, 30, "PAUSE");
+				sftd_draw_text(font, 100 - m_offset, HEIGHT / 2 - 10, C_BLUE, 15, "Tap or press Start to Resume the game");
+			}
+
+			sf2d_end_frame();
+		}
+
+		// Bottom Screen
+		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+		sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, 480 + HEIGHT, BOTTOM_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
 
 		if (!m_inTransition)
 		{
@@ -279,7 +354,11 @@ void GameScreen::Update()
 						if (m_toTitle)
 							m_screen = TITLE;
 						else
+						{
 							m_screen = PUZZLE;
+							m_level = rand() % NUMOFLEVELS;
+						}
+							
 					}
 
 					break;
@@ -290,7 +369,84 @@ void GameScreen::Update()
 					if (m_scTimer >= 300)
 					{
 						m_transitionState = ENDING;
-						m_president->moving(true, 0);
+
+						if (!m_fromPuzzle)
+							m_president->moving(true, 0);
+					}
+
+					break;
+				case ENDING:
+
+					m_bgOpacity += 3;
+
+					if (m_bgOpacity >= 255)
+					{
+						m_bgOpacity = 255;
+						m_transitionState = OPENING;
+						m_inTransition = false;
+						m_scTimer = 0;
+
+						if (m_fromPuzzle)
+							m_president->speak();
+					}
+					break;
+				}
+			}
+		}
+
+		if (m_speaking)
+		{
+			// Stopped speaking
+			if (m_president->isWaiting())
+			{
+				m_speaking = false;
+				m_toTitle = false;
+				m_inTransition = true;
+
+				if (m_fromPuzzle)
+				{
+					m_president->moving(true, 1);
+					m_fromPuzzle = false;
+					m_toTitle = true;
+				}
+					
+			}
+		}
+		else
+		{
+			if (m_president->isSpeaking())
+			{
+				m_speaking = true;
+			}
+		}
+
+		break;
+	case PUZZLE:
+		if (!m_pause)
+		{
+			if (m_inTransition)
+			{
+				switch (m_transitionState)
+				{
+				case OPENING:
+
+					m_bgOpacity -= 3;
+
+					if (m_bgOpacity <= 0)
+					{
+						m_transitionState = STAY;
+						m_bgOpacity = 0;
+						m_screen = GAME;	
+					}
+
+					break;
+				case STAY:
+
+					m_scTimer += 5;
+
+					if (m_scTimer >= 300)
+					{
+						m_transitionState = ENDING;
 					}
 
 					break;
@@ -309,27 +465,6 @@ void GameScreen::Update()
 				}
 			}
 		}
-
-		if (m_speaking)
-		{
-			// Stopped speaking
-			if (m_president->isWaiting())
-			{
-				m_speaking = false;
-				m_toTitle = true;
-				m_inTransition = true;
-			}
-		}
-		else
-		{
-			if (m_president->isSpeaking())
-			{
-				m_speaking = true;
-			}
-		}
-
-		break;
-	case END:
 		break;
 	}
 }
@@ -363,8 +498,8 @@ void GameScreen::CheckInputs()
 		}
 		break;
 	case GAME:
-
-		if (hidKeysDown() & KEY_B) 
+		
+		if (!m_inTransition && (hidKeysDown() & KEY_B))
 		{
 			m_speaking = false;
 			m_toTitle = true;
@@ -378,7 +513,14 @@ void GameScreen::CheckInputs()
 		}
 
 		break;
-	case END:
+	case PUZZLE:
+		if (hidKeysDown() & KEY_B)
+		{
+			m_fromPuzzle = true;
+			m_speaking = false;
+			m_toTitle = true;
+			m_inTransition = true;
+		}
 		break;
 	}
 
@@ -437,6 +579,8 @@ void GameScreen::ResetGame()
 	m_score = 0;
 	m_screen = GAME;
 	m_pause = false;
+	m_fromPuzzle = false;
+	m_toTitle = false;
 	m_president->setX(-67);
 }
 
