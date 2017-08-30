@@ -1,6 +1,5 @@
-Hello, this is the libctru romfs example.
-This text is being read off a file in romfs.
+Frase 1 buena. 
 
-  >>3DS Homebrew is Cool<<
-
-Signed off, fincs
+Frase 2 buena. 
+Frase 3 buena. 
+Frase 4 buena.

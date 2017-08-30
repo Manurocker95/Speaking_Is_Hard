@@ -62,6 +62,8 @@ public:
 	void wait();
 	bool isStanding();
 	bool isWaiting();
+	bool isMistaking();
+	void mistake();
 
 private:
 

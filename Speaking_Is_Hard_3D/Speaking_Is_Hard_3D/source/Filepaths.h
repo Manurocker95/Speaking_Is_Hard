@@ -24,7 +24,7 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 
 /* Sentences File */
 #define SENTENCE_FILE "romfs:/resources/Files/file.txt"
-
+#define BAD_SENTENCE_FILE "romfs:/resources/Files/file2.txt"
 /* Sounds */
 // Background Music
 #define SND_BGM_GAME  "romfs:/resources/Sounds/Music/game.wav"

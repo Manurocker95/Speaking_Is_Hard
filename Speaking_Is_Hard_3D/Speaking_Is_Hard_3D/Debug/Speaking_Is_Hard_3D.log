@@ -26,11 +26,11 @@ d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.c
     delete font2;
            ^~~~~
   d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp: In member function 'virtual void GameScreen::Update()':
-d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(293,9): warning GB774866A: enumeration value 'END' not handled in switch [-Wswitch]
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(336,9): warning GB774866A: enumeration value 'END' not handled in switch [-Wswitch]
     switch (m_screen)
            ^
   d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp: In member function 'virtual void GameScreen::CheckInputs()':
-d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(478,9): warning GB774866A: enumeration value 'END' not handled in switch [-Wswitch]
+d:/Github/Speaking_Is_Hard/Speaking_Is_Hard_3D/Speaking_Is_Hard_3D/source/Game.cpp(547,9): warning GB774866A: enumeration value 'END' not handled in switch [-Wswitch]
     switch (m_screen)
            ^
   linking Speaking_Is_Hard_3D.elf

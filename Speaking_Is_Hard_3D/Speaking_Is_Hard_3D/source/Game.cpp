@@ -48,15 +48,22 @@ void GameScreen::Start()
 	m_walking = false;
 	m_speaking = false;
 	m_fromPuzzle = false;
+	m_failed = false;
+	m_showingFPS = false;
 	m_score = 0;
 	m_maxTime = TIMEPERPUZZLE;
 	m_time = m_maxTime;
+	m_timePuzzle = m_time;
 	m_bgOpacity = 255;
 	m_dialogOpacity = 255;
 	m_scTimer = 0;
 	m_level = 0;
+	m_sentenceID = 0;
 	m_transitionState = OPENING;
+	sentence = "";
 	load_sentences(SENTENCE_FILE);
+	load_bad_sentences(BAD_SENTENCE_FILE);
+	srand(time(NULL));
 
 	// We will use 2 channels for sounds: 1 = BGM, 2= Sound effects so they can be played at same time. You can set as channels as you want.
 	// We clear the channels
@@ -119,12 +126,23 @@ void GameScreen::Draw()
 
 		if (!m_inTransition)
 		{
+			sftd_draw_text(font, 20, 8, C_WHITE, 15, "BEST SCORE: ");
+			sftd_draw_text(font, 85, 8, C_WHITE, 15, std::to_string(m_maxScore).c_str());
 			sftd_draw_text(font, 20, HEIGHT - 30, C_WHITE, 15, "Manurocker95 (C) 2017");
 			sftd_draw_text(font, 230, HEIGHT - 30, C_WHITE, 15, "VERSION: ");
 			sftd_draw_text(font, 280, HEIGHT - 30, C_WHITE, 15, VERSION);
 
 			if (DEBUGMODE)
+			{
 				sftd_draw_text(font, 230, 8, C_WHITE, 15, "DEBUG MODE");
+
+				if (m_showingFPS)
+				{
+					sftd_draw_text(font, 230, 20, C_WHITE, 15, "FPS:");
+					sftd_draw_text(font, 250, 20, C_WHITE, 15, std::to_string(sf2d_get_fps()).c_str());
+				}
+			}
+				
 		}
 
 		sf2d_end_frame();
@@ -149,6 +167,7 @@ void GameScreen::Draw()
 		if (m_speaking)
 		{
 			sf2d_draw_texture_part_blend(m_sprites, 40, 7, 582, 129, 256, 125, RGBA8(255, 255, 255, m_dialogOpacity));
+			sftd_draw_text(font, 70, 49, C_BLACK, 20, sentence.c_str());
 		}
 
 		if (m_pause)
@@ -183,6 +202,7 @@ void GameScreen::Draw()
 			if (m_speaking)
 			{
 				sf2d_draw_texture_part_blend(m_sprites, 40+ m_offset / 2, 7, 582, 129, 256, 125, RGBA8(255, 255, 255, m_dialogOpacity));
+				sftd_draw_text(font, 70 + m_offset / 2, 49, C_BLACK, 20, sentence.c_str());
 			}
 
 			if (m_pause)
@@ -200,13 +220,22 @@ void GameScreen::Draw()
 		
 		if (!m_inTransition)
 		{
-	
-			sftd_draw_text(font, 20, HEIGHT - 30, C_WHITE, 15, "Manurocker95 (C) 2017");
-			sftd_draw_text(font, 230, HEIGHT - 30, C_WHITE, 15, "VERSION: ");
-			sftd_draw_text(font, 280, HEIGHT - 30, C_WHITE, 15, VERSION);
+			sftd_draw_text(font, 20, 8, C_WHITE, 15, "BEST SCORE: ");
+			sftd_draw_text(font, 85, 8, C_WHITE, 15, std::to_string(m_maxScore).c_str());
+			//sftd_draw_text(font, 20, HEIGHT - 30, C_WHITE, 15, "Manurocker95 (C) 2017");
+			//sftd_draw_text(font, 230, HEIGHT - 30, C_WHITE, 15, "VERSION: ");
+			//sftd_draw_text(font, 280, HEIGHT - 30, C_WHITE, 15, VERSION);
 
 			if (DEBUGMODE)
+			{
 				sftd_draw_text(font, 230, 8, C_WHITE, 15, "DEBUG MODE");
+
+				if (m_showingFPS)
+				{
+					sftd_draw_text(font, 230, 20, C_WHITE, 15, "FPS:");
+					sftd_draw_text(font, 250, 20, C_WHITE, 15, std::to_string(sf2d_get_fps()).c_str());
+				}
+			}
 		}
 
 		sf2d_end_frame();
@@ -219,14 +248,16 @@ void GameScreen::Draw()
 		sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, 480, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
 
 		// Reference image of the puzzle
-		sf2d_draw_texture_part_blend(m_sprites, 137, 56, m_level*133, 508, 133, 133, RGBA8(255, 255, 255, m_bgOpacity));
+		sf2d_draw_texture_part_blend(m_sprites, 136, 55, m_level*135, 508, 135, 135, RGBA8(255, 255, 255, m_bgOpacity));
 
 		//y=
 
 		if (!m_inTransition)
 		{
-			sftd_draw_text(font, 20, 5, C_WHITE, 30, "TIME:");
-			sftd_draw_text(font, 80, 5, C_WHITE, 30, "100");
+			sftd_draw_text(font, 20, 5, C_BROWN, 30, "TIME:");
+			sftd_draw_text(font, 80, 5, C_BROWN, 30, std::to_string(m_time).c_str());
+			sftd_draw_text(font, 280, 5, C_BROWN, 30, "SCORE:");
+			sftd_draw_text(font, 350, 5, C_BROWN, 30, std::to_string(m_score).c_str());
 		}
 
 		if (m_pause)
@@ -249,12 +280,14 @@ void GameScreen::Draw()
 			sf2d_draw_texture_part_blend(m_bg, 0 + m_offset, 0, TOP_WIDTH, 480, TOP_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
 
 			// Reference image of the puzzle
-			sf2d_draw_texture_part_blend(m_sprites, 137+m_offset/2, 56, m_level * 133, 508, 133, 133, RGBA8(255, 255, 255, m_bgOpacity));
+			sf2d_draw_texture_part_blend(m_sprites, 136+m_offset, 55, m_level * 135, 508, 135, 135, RGBA8(255, 255, 255, m_bgOpacity));
 
 			if (!m_inTransition)
 			{
-				sftd_draw_text(font, 20 + m_offset / 2, 5, C_WHITE, 30, "TIME:");
-				sftd_draw_text(font, 80 + m_offset / 2, 5, C_WHITE, 30, "100");
+				sftd_draw_text(font, 20 + m_offset / 2, 5, C_BROWN, 30, "TIME:");
+				sftd_draw_text(font, 80 + m_offset / 2, 5, C_BROWN, 30, std::to_string(m_time).c_str());
+				sftd_draw_text(font, 280 + m_offset / 2, 5, C_BROWN, 30, "SCORE:");
+				sftd_draw_text(font, 350 + m_offset / 2, 5, C_BROWN, 30, std::to_string(m_score).c_str());
 			}
 
 			if (m_pause)
@@ -273,12 +306,22 @@ void GameScreen::Draw()
 
 		if (!m_inTransition)
 		{
-			sftd_draw_text(font, 20, HEIGHT - 30, C_WHITE, 15, "Manurocker95 (C) 2017");
-			sftd_draw_text(font, 230, HEIGHT - 30, C_WHITE, 15, "VERSION: ");
-			sftd_draw_text(font, 280, HEIGHT - 30, C_WHITE, 15, VERSION);
+			sftd_draw_text(font, 20, 8, C_BROWN, 15, "BEST SCORE: ");
+			sftd_draw_text(font, 85, 8, C_BROWN, 15, std::to_string(m_maxScore).c_str());
+			//sftd_draw_text(font, 20, HEIGHT - 30, C_BROWN, 15, "Manurocker95 (C) 2017");
+			//sftd_draw_text(font, 230, HEIGHT - 30, C_BROWN, 15, "VERSION: ");
+			//sftd_draw_text(font, 280, HEIGHT - 30, C_BROWN, 15, VERSION);
 
 			if (DEBUGMODE)
-				sftd_draw_text(font, 230, 8, C_WHITE, 15, "DEBUG MODE");
+			{
+				sftd_draw_text(font, 230, 8, C_BROWN, 15, "DEBUG MODE");
+
+				if (m_showingFPS)
+				{
+					sftd_draw_text(font, 230, 20, C_BROWN, 15, "FPS:");
+					sftd_draw_text(font, 250, 20, C_BROWN, 15, std::to_string(sf2d_get_fps()).c_str());
+				}
+			}
 		}
 
 		sf2d_end_frame();
@@ -357,6 +400,7 @@ void GameScreen::Update()
 						{
 							m_screen = PUZZLE;
 							m_level = rand() % NUMOFLEVELS;
+							ResetPuzzle();
 						}
 							
 					}
@@ -387,7 +431,19 @@ void GameScreen::Update()
 						m_scTimer = 0;
 
 						if (m_fromPuzzle)
-							m_president->speak();
+						{
+							if (m_failed)
+							{
+								CheckScore();
+								m_president->mistake();
+							}
+							else
+							{
+								m_president->speak();
+								m_level = rand() % NUMOFLEVELS;
+							}
+						}
+							
 					}
 					break;
 				}
@@ -403,11 +459,12 @@ void GameScreen::Update()
 				m_toTitle = false;
 				m_inTransition = true;
 
-				if (m_fromPuzzle)
+				if (m_fromPuzzle && m_failed)
 				{
 					m_president->moving(true, 1);
 					m_fromPuzzle = false;
 					m_toTitle = true;
+					m_failed = false;
 				}
 					
 			}
@@ -416,7 +473,14 @@ void GameScreen::Update()
 		{
 			if (m_president->isSpeaking())
 			{
+				m_sentenceID = rand() % NUMOFSENTENCES;
 				m_speaking = true;
+				sentence = m_sentences.at(m_sentenceID);
+			}
+			else if (m_president->isMistaking())
+			{
+				m_speaking = true;
+				sentence = m_badSentences.at(m_sentenceID);
 			}
 		}
 
@@ -463,6 +527,11 @@ void GameScreen::Update()
 					}
 					break;
 				}
+			}
+			else
+			{
+				m_timePuzzle -= 1 / sf2d_get_fps();
+				m_time = (u32)m_timePuzzle;
 			}
 		}
 		break;
@@ -514,14 +583,45 @@ void GameScreen::CheckInputs()
 
 		break;
 	case PUZZLE:
+
 		if (hidKeysDown() & KEY_B)
 		{
-			m_fromPuzzle = true;
-			m_speaking = false;
-			m_toTitle = true;
-			m_inTransition = true;
+			passedPuzzle(false);
 		}
+
+		if (DEBUGMODE && (hidKeysDown() & KEY_X))
+		{
+			passedPuzzle(true);
+		}
+
+		if (hidKeysDown() & KEY_TOUCH)
+		{
+			hidTouchRead(&touch);
+			if ((touch.px > 248 && touch.px < 312) && (touch.py > 76 && touch.py < 140)) 
+			{
+				passedPuzzle(false);
+			}
+
+			if ((touch.px > 16 && touch.px < 80) && (touch.py > 76 && touch.py < 140))
+			{
+				ResetPuzzle(true);
+			}
+		}
+
 		break;
+	}
+
+	if (DEBUGMODE)
+	{
+		if (hidKeysDown() & KEY_L)
+		{
+			m_showingFPS = !m_showingFPS;
+		}
+
+		if (hidKeysDown() & KEY_R)
+		{
+			m_score += 10;
+		}
 	}
 
 	// We go to tile when pressing Select
@@ -533,6 +633,40 @@ void GameScreen::CheckInputs()
 	if (m_exit)
 	{
 		SceneManager::instance()->exitGame();
+	}
+}
+
+void GameScreen::passedPuzzle(bool isTrue)
+{
+	if (isTrue)
+	{
+		m_fromPuzzle = true;
+		m_speaking = false;
+		m_toTitle = false;
+		m_inTransition = true;
+		m_failed = false;
+		m_score += 1;
+	}
+	else
+	{
+		m_fromPuzzle = true;
+		m_speaking = false;
+		m_toTitle = true;
+		m_inTransition = true;
+		m_failed = true;
+	}
+}
+
+void GameScreen::ResetPuzzle(bool ingame)
+{
+	m_time = m_maxTime;
+	m_timePuzzle = m_time;
+
+	if (ingame)
+	{
+		m_score -= PUZZLEPENALTY;
+		if (m_score < 0)
+			m_score = 0;
 	}
 }
 
@@ -553,19 +687,49 @@ void GameScreen::load_sentences(const char* path)
 					mystring[a - 2] = 0;
 			}
 
-			//m_sentences.push_back(std::to_string(sentence));
 			m_sentences.push_back(mystring);
-			//puts(mystring);
 			sentence++;
 		}
 		
 		m_sentences.push_back("Aaaaaand... that's it.");
-		//printf(">>EOF<<\n");
 		fclose(f);
 	}
 	else
 	{
 		m_sentences.push_back("Can't load the sentence file.");
+	}
+}
+
+void GameScreen::load_bad_sentences(const char* path)
+{
+	FILE* f = fopen(path, "r");
+	if (f)
+	{
+		char mystring[100];
+		int sentence = 0;
+		while (fgets(mystring, sizeof(mystring), f))
+		{
+			int a = strlen(mystring);
+			if (mystring[a - 1] == '\n')
+			{
+				mystring[a - 1] = 0;
+				if (mystring[a - 2] == '\r')
+					mystring[a - 2] = 0;
+			}
+
+			//m_sentences.push_back(std::to_string(sentence));
+			m_badSentences.push_back(mystring);
+			//puts(mystring);
+			sentence++;
+		}
+
+		m_badSentences.push_back("Aaaaaand... that's it.");
+		//printf(">>EOF<<\n");
+		fclose(f);
+	}
+	else
+	{
+		m_badSentences.push_back("Can't load the sentence file.");
 	}
 }
 
@@ -580,6 +744,7 @@ void GameScreen::ResetGame()
 	m_screen = GAME;
 	m_pause = false;
 	m_fromPuzzle = false;
+	m_failed = false;
 	m_toTitle = false;
 	m_president->setX(-67);
 }

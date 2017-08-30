@@ -73,7 +73,7 @@ bool President::Update()
 		return true;
 	}
 
-	if (m_state == SPEAKING)
+	if (m_state == SPEAKING || m_state == MISTAKE)
 	{
 		m_timer++;
 		if (m_timer > m_timeSpeaking)
@@ -147,6 +147,17 @@ void President::speak()
 
 }
 
+void President::mistake()
+{
+	m_state = MISTAKE;
+	m_startingYOffset = 643;
+	m_currentFrame = 0;
+	m_sizePerFrame = 43;
+	m_sizeYPerFrame = 127;
+	m_numFrames = 4;
+
+}
+
 bool President::isSpeaking()
 {
 	return (m_state == SPEAKING);
@@ -160,6 +171,11 @@ bool President::isStanding()
 bool President::isWaiting()
 {
 	return (m_state == WAITING);
+}
+
+bool President::isMistaking()
+{
+	return (m_state == MISTAKE);
 }
 
 void President::moving(bool value, u16 dir)

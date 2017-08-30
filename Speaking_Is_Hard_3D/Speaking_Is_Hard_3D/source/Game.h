@@ -60,10 +60,12 @@ public:
 	void Update() override;				// Update
 	void CheckScore();
 	void ResetGame();
+	void ResetPuzzle(bool ingame = false);
 	void goToTitle();
 	void EndGame();
 	void load_sentences(const char* path);
-
+	void load_bad_sentences(const char* path);
+	void passedPuzzle(bool isTrue);
 private:
 
 	SCREEN m_screen;
@@ -77,9 +79,10 @@ private:
 	bool m_exit;
 	bool m_speaking;
 	bool m_walking;
-	
+	bool m_failed;
+	bool m_showingFPS;
 	float m_offset;						// Offset for 3D
-
+	float m_timePuzzle;
 	//
 
 	//
@@ -88,10 +91,14 @@ private:
 	u32 m_bgOpacity, m_dialogOpacity;
 	u32 held;
 	u32 m_scTimer;
+	u16 m_sentenceID;
 	u16 m_level;
+
 	touchPosition touch;
 	TRANSITION_STATE m_transitionState;
 	std::vector <std::string> m_sentences;
+	std::vector <std::string> m_badSentences;
+	std::string sentence;
 	President * m_president;
 	sf2d_texture * m_bg, * m_sprites;
 	sound * m_bgm;						// Sounds
