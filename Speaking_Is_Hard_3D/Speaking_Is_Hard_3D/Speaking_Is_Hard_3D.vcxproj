@@ -106,6 +106,7 @@
     <ClInclude Include="source\Settings.h" />
     <ClInclude Include="source\sound.h" />
     <ClInclude Include="source\SplashScreen.h" />
+    <ClInclude Include="source\Token.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Game.cpp" />
@@ -114,6 +115,7 @@
     <ClCompile Include="source\SceneManager.cpp" />
     <ClCompile Include="source\sound.cpp" />
     <ClCompile Include="source\SplashScreen.cpp" />
+    <ClCompile Include="source\token.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Makefile">

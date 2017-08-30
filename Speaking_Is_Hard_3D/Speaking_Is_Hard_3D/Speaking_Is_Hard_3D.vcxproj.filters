@@ -43,6 +43,9 @@
     <ClInclude Include="source\president.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\Token.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
@@ -61,6 +64,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\President.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\token.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

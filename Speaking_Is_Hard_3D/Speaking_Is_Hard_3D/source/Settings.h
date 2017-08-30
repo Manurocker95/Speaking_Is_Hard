@@ -28,8 +28,9 @@
 #define MESSAGESIZE 40
 
 // President stuff
+#define FRAMECOUNTERPRESIDENT 8
 #define PRESIDENTMOVEMENT 10
-#define NUMOFSENTENCES 4
+#define NUMOFSENTENCES 3 // From 0... to
 
 
 // Puzzle stuff

@@ -19,8 +19,6 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 #ifndef _PRESIDENT_H
 #define _PRESIDENT_H
 
-#define FRAMECOUNTERPRESIDENT 8
-
 #include "sf2d.h"
 #include "sfil.h"
 #include "filepaths.h"

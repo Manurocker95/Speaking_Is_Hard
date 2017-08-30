@@ -1,6 +1,4 @@
 #include "President.h"
-#include <stdlib.h>     /* srand, rand */
-#include <time.h>       /* time */
 
 /* This file is part of Speaking Is Hard 3D!
 
@@ -123,9 +121,7 @@ bool President::Update()
 				m_timeToSpeak = 12;
 				speak();
 			}
-			
 		}
-
 	}
 
 	if (m_currentFrame >= m_numFrames)

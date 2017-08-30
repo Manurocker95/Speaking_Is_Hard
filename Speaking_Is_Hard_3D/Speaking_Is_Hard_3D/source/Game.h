@@ -32,12 +32,15 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 #include <string>  //for std::string
 #include <stdio.h>
 #include <unistd.h>
-
+#include <algorithm>
+#include <random>
+#include <chrono>       // std::chrono::system_clock
 #include "font_ttf.h"			//Don't worry if it seems to have error here
 #include "font2_ttf.h"
 #include "sound.h"
 #include "scene.h"
 #include "president.h"
+#include "Token.h"
 #include "SceneManager.h"
 
 #include "Settings.h"
@@ -98,6 +101,7 @@ private:
 	TRANSITION_STATE m_transitionState;
 	std::vector <std::string> m_sentences;
 	std::vector <std::string> m_badSentences;
+	std::vector< std::vector<Token*> > puzzle;
 	std::string sentence;
 	President * m_president;
 	sf2d_texture * m_bg, * m_sprites;

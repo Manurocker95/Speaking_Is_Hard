@@ -82,6 +82,19 @@ void GameScreen::Start()
 
 	m_president = new President(-67, 46, *m_sprites, true, 8, 67, 127);
 
+	u16 x = 96;
+	u16 y = 45;
+	u16 counter = 0;
+
+	for (int i = 0; i < PUZZLEDIFFICULTY; i++) {
+		std::vector<Token*> row; 
+		for (int j = 0; j < PUZZLEDIFFICULTY; j++) {
+			row.push_back(new Token(x + j*45,y+i*45, *m_sprites, (m_level * 135)+ (j * 45), 508+(i*45), 45, 45, counter));
+			counter++;
+		}
+		puzzle.push_back(row); 
+	}
+
 	// We load our sounds // PATH, CHANNEL, LOOP? -> // BGM plays with loop, but sfx just one time
 	m_bgm = new sound(SND_BGM_GAME, 1, true);		
 
@@ -303,6 +316,15 @@ void GameScreen::Draw()
 		// Bottom Screen
 		sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
 		sf2d_draw_texture_part_blend(m_bg, 0, 0, TOP_WIDTH, 480 + HEIGHT, BOTTOM_WIDTH, HEIGHT, RGBA8(255, 255, 255, m_bgOpacity));
+		
+		// the puzzle
+		for (int i = 0; i < PUZZLEDIFFICULTY; i++)
+		{
+			for (int j = 0; j < PUZZLEDIFFICULTY; j++)
+			{
+				puzzle[i][j]->Draw(0, RGBA8(255, 255, 255, m_bgOpacity));
+			}
+		}
 
 		if (!m_inTransition)
 		{
@@ -399,7 +421,6 @@ void GameScreen::Update()
 						else
 						{
 							m_screen = PUZZLE;
-							m_level = rand() % NUMOFLEVELS;
 							ResetPuzzle();
 						}
 							
@@ -532,6 +553,11 @@ void GameScreen::Update()
 			{
 				m_timePuzzle -= 1 / sf2d_get_fps();
 				m_time = (u32)m_timePuzzle;
+
+				if (m_time <= 0)
+				{
+					passedPuzzle(false);
+				}
 			}
 		}
 		break;
@@ -654,6 +680,8 @@ void GameScreen::passedPuzzle(bool isTrue)
 		m_toTitle = true;
 		m_inTransition = true;
 		m_failed = true;
+		m_time = m_maxTime;
+		m_timePuzzle = m_maxTime;
 	}
 }
 
@@ -664,10 +692,68 @@ void GameScreen::ResetPuzzle(bool ingame)
 
 	if (ingame)
 	{
-		m_score -= PUZZLEPENALTY;
-		if (m_score < 0)
-			m_score = 0;
+		if (m_score >= PUZZLEPENALTY)
+			m_score -= PUZZLEPENALTY;
+
+		for (int i = puzzle.size() - 1; i > 0; i--)
+		{
+			for (int j = puzzle[i].size() - 1; j > 0; j--) 
+			{
+				srand(static_cast<unsigned int>(time(0)));
+
+				int m = rand () % (i + 1);
+				int n = rand() % (j + 1);
+
+				u16 tempX = puzzle[i][j]->getX();
+				u16 tempY = puzzle[i][j]->getY();
+
+				puzzle[i][j]->setX(puzzle[m][n]->getX());
+				puzzle[i][j]->setY(puzzle[m][n]->getY());
+
+				puzzle[m][n]->setX(tempX);
+				puzzle[m][n]->setY(tempY);
+			}
+		}
 	}
+	else
+	{
+		m_level = rand() % NUMOFLEVELS;
+
+		u16 x = 96;
+		u16 y = 45;
+
+		for (int i = 0; i < PUZZLEDIFFICULTY; i++) 
+		{
+			for (int j = 0; j < PUZZLEDIFFICULTY; j++) 
+			{
+				puzzle[i][j]->reset(x + j * 45, y + i * 45, (m_level * 135) + (j * 45), 508 + (i * 45), 45, 45);
+			}
+		}
+
+		// Down - Right corner
+		puzzle[PUZZLEDIFFICULTY-1][PUZZLEDIFFICULTY-1]->reset(x + (PUZZLEDIFFICULTY - 1) * 45, y + (PUZZLEDIFFICULTY - 1) * 45, 492, 155, 45, 45);
+
+		for (int i = puzzle.size() - 1; i > 0; i--)
+		{
+			for (int j = puzzle[i].size() - 1; j > 0; j--)
+			{
+				srand(static_cast<unsigned int>(time(0)));
+
+				int m = rand() % (i + 1);
+				int n = rand() % (j + 1);
+
+				u16 tempX = puzzle[i][j]->getX();
+				u16 tempY = puzzle[i][j]->getY();
+
+				puzzle[i][j]->setX(puzzle[m][n]->getX());
+				puzzle[i][j]->setY(puzzle[m][n]->getY());
+
+				puzzle[m][n]->setX(tempX);
+				puzzle[m][n]->setY(tempY);
+			}
+		}
+	}
+
 }
 
 void GameScreen::load_sentences(const char* path)
@@ -691,7 +777,7 @@ void GameScreen::load_sentences(const char* path)
 			sentence++;
 		}
 		
-		m_sentences.push_back("Aaaaaand... that's it.");
+		//m_sentences.push_back("Aaaaaand... that's it.");
 		fclose(f);
 	}
 	else
@@ -723,7 +809,7 @@ void GameScreen::load_bad_sentences(const char* path)
 			sentence++;
 		}
 
-		m_badSentences.push_back("Aaaaaand... that's it.");
+		//m_badSentences.push_back("Aaaaaand... that's it.");
 		//printf(">>EOF<<\n");
 		fclose(f);
 	}
