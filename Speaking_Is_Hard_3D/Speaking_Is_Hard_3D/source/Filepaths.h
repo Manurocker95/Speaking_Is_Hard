@@ -28,6 +28,7 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 /* Sounds */
 // Background Music
 #define SND_BGM_GAME  "romfs:/resources/Sounds/Music/game.wav"
+#define SND_BGM_GAME2 "romfs:/resources/Sounds/Music/game2.wav"
 
 // Sound Effects
 #define SND_SFX_SPLASH "romfs:/resources/Sounds/SFX/bbb.wav"

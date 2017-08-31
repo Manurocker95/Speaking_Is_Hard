@@ -56,6 +56,8 @@ public:
 	void blanked(bool blank);
 	u16 getID();
 	void setID(u16 newid);
+	bool isPressed(touchPosition touch);
+
 private:
 
 	u16 m_x, m_originalX;

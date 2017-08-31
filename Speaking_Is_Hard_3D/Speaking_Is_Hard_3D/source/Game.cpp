@@ -31,6 +31,7 @@ GameScreen::~GameScreen()
 {
 
 	delete m_bgm;
+	delete m_bgm2;
 	delete font;
 	delete font2;
 	delete m_bg;
@@ -66,6 +67,7 @@ void GameScreen::Start()
 	m_level = 0;
 	m_sentenceID = 0;
 	sentence = "";
+	debug = "";
 	load_sentences(SENTENCE_FILE);
 	load_bad_sentences(BAD_SENTENCE_FILE);
 	srand(time(NULL));
@@ -98,10 +100,12 @@ void GameScreen::Start()
 			counter++;
 		}
 		puzzle.push_back(row); 
+		original_puzzle.push_back(row);
 	}
 
 	// We load our sounds // PATH, CHANNEL, LOOP? -> // BGM plays with loop, but sfx just one time
 	m_bgm = new sound(SND_BGM_GAME, 1, true);		
+	m_bgm2 = new sound(SND_BGM_GAME2, 1, true);
 
 	// We play our bgm
 	m_bgm->play();
@@ -428,6 +432,8 @@ void GameScreen::Update()
 							m_screen = TITLE;
 						else
 						{
+							m_bgm->stop();
+							m_bgm2->play();
 							m_screen = PUZZLE;
 							ResetPuzzle();
 						}
@@ -530,6 +536,8 @@ void GameScreen::Update()
 						m_transitionState = STAY;
 						m_bgOpacity = 0;
 						m_screen = GAME;	
+						m_bgm2->stop();
+						m_bgm->play();
 					}
 
 					break;
@@ -659,6 +667,11 @@ void GameScreen::CheckInputs()
 				{
 					passedPuzzle(false);
 				}
+
+				//
+				// * The puzzle
+				//
+				MovePuzzle(touch);
 			}
 		}	
 
@@ -690,26 +703,535 @@ void GameScreen::CheckInputs()
 	}
 }
 
+// * Method for moving each token 
+void GameScreen::MovePuzzle(touchPosition touch)
+{
+	for (u16 i = 0; i < PUZZLEDIFFICULTY; i++)
+	{
+		for (u16 j = 0; j < PUZZLEDIFFICULTY; j++)
+		{
+			if (puzzle[i][j]->isPressed(touch) && !puzzle[i][j]->isBlank())
+			{
+				if (i == 0)
+				{
+					// First position in the matrix [0][0]
+					if (j == 0)
+					{
+						// We check [1] [0]
+						if (puzzle[i+1][j]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i + 1][j]->getX());
+							puzzle[i][j]->setY(puzzle[i + 1][j]->getY());
+							puzzle[i][j]->setID(puzzle[i + 1][j]->getID());
+							puzzle[i][j] = puzzle[i + 1][j];
+
+							puzzle[i + 1][j]->setX(tempX);
+							puzzle[i + 1][j]->setY(tempY);
+							puzzle[i + 1][j]->setID(tempID);
+							puzzle[i + 1][j] = tempToken;
+							
+							return;
+						}
+						// We check [0] [1]
+						else if (puzzle[i][j+1]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i][j + 1]->getX());
+							puzzle[i][j]->setY(puzzle[i][j + 1]->getY());
+							puzzle[i][j]->setID(puzzle[i][j + 1]->getID());
+							puzzle[i][j] = puzzle[i][j + 1];
+
+							puzzle[i][j + 1]->setX(tempX);
+							puzzle[i][j + 1]->setY(tempY);
+							puzzle[i][j + 1]->setID(tempID);
+							puzzle[i][j + 1] = tempToken;
+							debug = std::to_string(i) + " es i y j es: "+std::to_string(j);
+							return;
+						}
+					}
+					// Last position in the matrix [0][LAST]
+					else if (j == PUZZLEDIFFICULTY - 1)
+					{
+						// We check [0] [Last]
+						if (puzzle[i + 1][j]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i + 1][j]->getX());
+							puzzle[i][j]->setY(puzzle[i + 1][j]->getY());
+							puzzle[i][j]->setID(puzzle[i + 1][j]->getID());
+							puzzle[i][j] = puzzle[i + 1][j];
+
+							puzzle[i + 1][j]->setX(tempX);
+							puzzle[i + 1][j]->setY(tempY);
+							puzzle[i + 1][j]->setID(tempID);
+							puzzle[i + 1][j] = tempToken;
+							return;
+						}
+						// We check [0] [Last-1]
+						else if (puzzle[i][j - 1]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i][j - 1]->getX());
+							puzzle[i][j]->setY(puzzle[i][j - 1]->getY());
+							puzzle[i][j]->setID(puzzle[i][j - 1]->getID());
+							puzzle[i][j] = puzzle[i][j - 1];
+
+							puzzle[i][j - 1]->setX(tempX);
+							puzzle[i][j - 1]->setY(tempY);
+							puzzle[i][j - 1]->setID(tempID);
+							puzzle[i][j - 1] = tempToken;
+							return;
+						}
+					}
+					else
+					{
+						// We check [1] [n]
+						if (puzzle[i + 1][j]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i + 1][j]->getX());
+							puzzle[i][j]->setY(puzzle[i + 1][j]->getY());
+							puzzle[i][j]->setID(puzzle[i + 1][j]->getID());
+							puzzle[i][j] = puzzle[i + 1][j];
+
+							puzzle[i + 1][j]->setX(tempX);
+							puzzle[i + 1][j]->setY(tempY);
+							puzzle[i + 1][j]->setID(tempID);
+							puzzle[i + 1][j] = tempToken;
+							return;
+						}
+						// We check [0] [n-1]
+						else if (puzzle[i][j - 1]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i][j - 1]->getX());
+							puzzle[i][j]->setY(puzzle[i][j - 1]->getY());
+							puzzle[i][j]->setID(puzzle[i][j - 1]->getID());
+							puzzle[i][j] = puzzle[i][j - 1];
+
+							puzzle[i][j - 1]->setX(tempX);
+							puzzle[i][j - 1]->setY(tempY);
+							puzzle[i][j - 1]->setID(tempID);
+							puzzle[i][j - 1] = tempToken;
+							return;
+						}
+						// We check [0] [n+1]
+						else if (puzzle[i][j + 1]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i][j + 1]->getX());
+							puzzle[i][j]->setY(puzzle[i][j + 1]->getY());
+							puzzle[i][j]->setID(puzzle[i][j + 1]->getID());
+							puzzle[i][j] = puzzle[i][j + 1];
+
+							puzzle[i][j + 1]->setX(tempX);
+							puzzle[i][j + 1]->setY(tempY);
+							puzzle[i][j + 1]->setID(tempID);
+							puzzle[i][j + 1] = tempToken;
+							return;
+						}
+					}
+				}
+				else if (i == PUZZLEDIFFICULTY-1)
+				{
+					// First position in the matrix [LAST][0]
+					if (j == 0)
+					{
+						// We check [1] [0]
+						if (puzzle[i - 1][j]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i - 1][j]->getX());
+							puzzle[i][j]->setY(puzzle[i - 1][j]->getY());
+							puzzle[i][j]->setID(puzzle[i - 1][j]->getID());
+							puzzle[i][j] = puzzle[i - 1][j];
+
+							puzzle[i - 1][j]->setX(tempX);
+							puzzle[i - 1][j]->setY(tempY);
+							puzzle[i - 1][j]->setID(tempID);
+							puzzle[i - 1][j] = tempToken;
+							return;
+						}
+						// We check [0] [1]
+						else if (puzzle[i][j + 1]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i][j + 1]->getX());
+							puzzle[i][j]->setY(puzzle[i][j + 1]->getY());
+							puzzle[i][j]->setID(puzzle[i][j + 1]->getID());
+							puzzle[i][j] = puzzle[i][j + 1];
+
+							puzzle[i][j + 1]->setX(tempX);
+							puzzle[i][j + 1]->setY(tempY);
+							puzzle[i][j + 1]->setID(tempID);
+							puzzle[i][j + 1] = tempToken;
+							return;
+						}
+					}
+					// Last position in the matrix [LAST][LAST]
+					else if (j == PUZZLEDIFFICULTY - 1)
+					{
+						// We check [0] [Last]
+						if (puzzle[i - 1][j]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i - 1][j]->getX());
+							puzzle[i][j]->setY(puzzle[i - 1][j]->getY());
+							puzzle[i][j]->setID(puzzle[i - 1][j]->getID());
+							puzzle[i][j] = puzzle[i - 1][j];
+
+							puzzle[i - 1][j]->setX(tempX);
+							puzzle[i - 1][j]->setY(tempY);
+							puzzle[i - 1][j]->setID(tempID);
+							puzzle[i - 1][j] = tempToken;
+							return;
+						}
+						// We check [0] [Last-1]
+						else if (puzzle[i][j - 1]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i][j - 1]->getX());
+							puzzle[i][j]->setY(puzzle[i][j - 1]->getY());
+							puzzle[i][j]->setID(puzzle[i][j - 1]->getID());
+							puzzle[i][j] = puzzle[i][j - 1];
+
+							puzzle[i][j - 1]->setX(tempX);
+							puzzle[i][j - 1]->setY(tempY);
+							puzzle[i][j - 1]->setID(tempID);
+							puzzle[i][j - 1] = tempToken;
+							return;
+						}
+					}
+					else
+					{
+						// We check [1] [n]
+						if (puzzle[i - 1][j]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i - 1][j]->getX());
+							puzzle[i][j]->setY(puzzle[i - 1][j]->getY());
+							puzzle[i][j]->setID(puzzle[i - 1][j]->getID());
+							puzzle[i][j] = puzzle[i - 1][j];
+
+							puzzle[i - 1][j]->setX(tempX);
+							puzzle[i - 1][j]->setY(tempY);
+							puzzle[i - 1][j]->setID(tempID);
+							puzzle[i - 1][j] = tempToken;
+							return;
+						}
+						// We check [0] [n-1]
+						else if (puzzle[i][j - 1]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i][j - 1]->getX());
+							puzzle[i][j]->setY(puzzle[i][j - 1]->getY());
+							puzzle[i][j]->setID(puzzle[i][j - 1]->getID());
+							puzzle[i][j] = puzzle[i][j - 1];
+
+							puzzle[i][j - 1]->setX(tempX);
+							puzzle[i][j - 1]->setY(tempY);
+							puzzle[i][j - 1]->setID(tempID);
+							puzzle[i][j - 1] = tempToken;
+							return;
+						}
+						// We check [0] [n+1]
+						else if (puzzle[i][j + 1]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i][j + 1]->getX());
+							puzzle[i][j]->setY(puzzle[i][j + 1]->getY());
+							puzzle[i][j]->setID(puzzle[i][j + 1]->getID());
+							puzzle[i][j] = puzzle[i][j + 1];
+
+							puzzle[i][j + 1]->setX(tempX);
+							puzzle[i][j + 1]->setY(tempY);
+							puzzle[i][j + 1]->setID(tempID);
+							puzzle[i][j + 1] = tempToken;
+							return;
+						}
+					}
+				}
+				else
+				{
+					// First position in the matrix [n][0]
+					if (j == 0)
+					{
+						// We check [n+1] [0]
+						if (puzzle[i + 1][j]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i + 1][j]->getX());
+							puzzle[i][j]->setY(puzzle[i + 1][j]->getY());
+							puzzle[i][j]->setID(puzzle[i + 1][j]->getID());
+							puzzle[i][j] = puzzle[i + 1][j];
+
+							puzzle[i + 1][j]->setX(tempX);
+							puzzle[i + 1][j]->setY(tempY);
+							puzzle[i + 1][j]->setID(tempID);
+							puzzle[i + 1][j] = tempToken;
+							return;
+						}
+						// We check [n-1] [0]
+						else if (puzzle[i - 1][j]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i - 1][j]->getX());
+							puzzle[i][j]->setY(puzzle[i - 1][j]->getY());
+							puzzle[i][j]->setID(puzzle[i - 1][j]->getID());
+							puzzle[i][j] = puzzle[i - 1][j];
+
+							puzzle[i - 1][j]->setX(tempX);
+							puzzle[i - 1][j]->setY(tempY);
+							puzzle[i - 1][j]->setID(tempID);
+							puzzle[i - 1][j] = tempToken;
+							return;
+						}
+						// We check [n] [1]
+						else if (puzzle[i][j + 1]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i][j + 1]->getX());
+							puzzle[i][j]->setY(puzzle[i][j + 1]->getY());
+							puzzle[i][j]->setID(puzzle[i][j + 1]->getID());
+							puzzle[i][j] = puzzle[i][j + 1];
+
+							puzzle[i][j + 1]->setX(tempX);
+							puzzle[i][j + 1]->setY(tempY);
+							puzzle[i][j + 1]->setID(tempID);
+							puzzle[i][j + 1] = tempToken;
+							return;
+						}
+					}
+					// Last position in the matrix [n][LAST]
+					else if (j == PUZZLEDIFFICULTY - 1)
+					{
+						// We check [0] [Last]
+						if (puzzle[i + 1][j]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i + 1][j]->getX());
+							puzzle[i][j]->setY(puzzle[i + 1][j]->getY());
+							puzzle[i][j]->setID(puzzle[i + 1][j]->getID());
+							puzzle[i][j] = puzzle[i + 1][j];
+
+							puzzle[i + 1][j]->setX(tempX);
+							puzzle[i + 1][j]->setY(tempY);
+							puzzle[i + 1][j]->setID(tempID);
+							puzzle[i + 1][j] = tempToken;
+							return;
+						}
+						else if (puzzle[i - 1][j]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i - 1][j]->getX());
+							puzzle[i][j]->setY(puzzle[i - 1][j]->getY());
+							puzzle[i][j]->setID(puzzle[i - 1][j]->getID());
+							puzzle[i][j] = puzzle[i - 1][j];
+
+							puzzle[i - 1][j]->setX(tempX);
+							puzzle[i - 1][j]->setY(tempY);
+							puzzle[i - 1][j]->setID(tempID);
+							puzzle[i - 1][j] = tempToken;
+							return;
+						}
+						// We check [0] [Last-1]
+						else if (puzzle[i][j - 1]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i][j - 1]->getX());
+							puzzle[i][j]->setY(puzzle[i][j - 1]->getY());
+							puzzle[i][j]->setID(puzzle[i][j - 1]->getID());
+							puzzle[i][j] = puzzle[i][j - 1];
+
+							puzzle[i][j - 1]->setX(tempX);
+							puzzle[i][j - 1]->setY(tempY);
+							puzzle[i][j - 1]->setID(tempID);
+							puzzle[i][j - 1] = tempToken;
+							return;
+						}
+					}
+					// Position[n][m]
+					else
+					{
+						// We check [n+1] [m]
+						if (puzzle[i + 1][j]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i + 1][j]->getX());
+							puzzle[i][j]->setY(puzzle[i + 1][j]->getY());
+							puzzle[i][j]->setID(puzzle[i + 1][j]->getID());
+							puzzle[i][j] = puzzle[i + 1][j];
+
+							puzzle[i + 1][j]->setX(tempX);
+							puzzle[i + 1][j]->setY(tempY);
+							puzzle[i + 1][j]->setID(tempID);
+							puzzle[i + 1][j] = tempToken;
+							return;
+						}
+						// We check [n-1] [m]
+						if (puzzle[i - 1][j]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i - 1][j]->getX());
+							puzzle[i][j]->setY(puzzle[i - 1][j]->getY());
+							puzzle[i][j]->setID(puzzle[i - 1][j]->getID());
+							puzzle[i][j] = puzzle[i - 1][j];
+
+							puzzle[i - 1][j]->setX(tempX);
+							puzzle[i - 1][j]->setY(tempY);
+							puzzle[i - 1][j]->setID(tempID);
+							puzzle[i - 1][j] = tempToken;
+							return;
+						}
+						// We check [n] [m-1]
+						else if (puzzle[i][j - 1]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i][j - 1]->getX());
+							puzzle[i][j]->setY(puzzle[i][j - 1]->getY());
+							puzzle[i][j]->setID(puzzle[i][j - 1]->getID());
+							puzzle[i][j] = puzzle[i][j - 1];
+
+							puzzle[i][j - 1]->setX(tempX);
+							puzzle[i][j - 1]->setY(tempY);
+							puzzle[i][j - 1]->setID(tempID);
+							puzzle[i][j - 1] = tempToken;
+							return;
+						}
+						// We check [n] [m+1]
+						else if (puzzle[i][j + 1]->isBlank())
+						{
+							u16 tempX = puzzle[i][j]->getX();
+							u16 tempY = puzzle[i][j]->getY();
+							u16 tempID = puzzle[i][j]->getID();
+							Token * tempToken = puzzle[i][j];
+
+							puzzle[i][j]->setX(puzzle[i][j + 1]->getX());
+							puzzle[i][j]->setY(puzzle[i][j + 1]->getY());
+							puzzle[i][j]->setID(puzzle[i][j + 1]->getID());
+							puzzle[i][j] = puzzle[i][j + 1];
+
+							puzzle[i][j + 1]->setX(tempX);
+							puzzle[i][j + 1]->setY(tempY);
+							puzzle[i][j + 1]->setID(tempID);
+							puzzle[i][j + 1] = tempToken;
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 // * Check Puzzle - We check if we ended right or not 
 void GameScreen::CheckPuzzle()
 {
 	bool ret = true;
 
-	u16 x = 96;
-	u16 y = 45;
 	u16 goodID = 0;
-	u16 id = 0;
 
 	for (int i = 0; i < PUZZLEDIFFICULTY; i++)
 	{
 		for (int j = 0; j < PUZZLEDIFFICULTY; j++)
 		{
-			if (puzzle[i][j]->getID() == id && (puzzle[i][j]->getX() == x + j * 45) && (puzzle[i][j]->getY() == y + i * 45))
+			if (puzzle[i][j] == original_puzzle[i][j])
 			{
 				goodID++;
 			}
-
-			id++;
 		}
 	}
 
@@ -756,6 +1278,22 @@ void GameScreen::ResetPuzzle(bool ingame)
 		if (m_score >= PUZZLEPENALTY)
 			m_score -= PUZZLEPENALTY;
 
+		u16 x = 96;
+		u16 y = 45;
+		
+		for (int i = 0; i < PUZZLEDIFFICULTY; i++)
+		{
+			for (int j = 0; j < PUZZLEDIFFICULTY; j++)
+			{
+				original_puzzle[i][j]->reset(x + j * 45, y + i * 45, (m_level * 135) + (j * 45), 508 + (i * 45), 45, 45);
+			}
+		}
+
+		puzzle = original_puzzle;
+		
+		// Down - Right corner
+		puzzle[PUZZLEDIFFICULTY - 1][PUZZLEDIFFICULTY - 1]->reset(x + (PUZZLEDIFFICULTY - 1) * 45, y + (PUZZLEDIFFICULTY - 1) * 45, 492, 155, 45, 45, true);
+
 		for (int i = puzzle.size() - 1; i > 0; i--)
 		{
 			for (int j = puzzle[i].size() - 1; j > 0; j--) 
@@ -768,14 +1306,17 @@ void GameScreen::ResetPuzzle(bool ingame)
 				u16 tempX = puzzle[i][j]->getX();
 				u16 tempY = puzzle[i][j]->getY();
 				u16 tempID = puzzle[i][j]->getID();
+				Token * tempToken = puzzle[i][j];
 
 				puzzle[i][j]->setX(puzzle[m][n]->getX());
 				puzzle[i][j]->setY(puzzle[m][n]->getY());
 				puzzle[i][j]->setID(puzzle[m][n]->getID());
+				puzzle[i][j] = puzzle[m][n];
 
 				puzzle[m][n]->setX(tempX);
 				puzzle[m][n]->setY(tempY);
 				puzzle[m][n]->setID(tempID);
+				puzzle[m][n] = tempToken;
 			}
 		}
 	}
@@ -787,14 +1328,16 @@ void GameScreen::ResetPuzzle(bool ingame)
 
 		u16 x = 96;
 		u16 y = 45;
-
+		
 		for (int i = 0; i < PUZZLEDIFFICULTY; i++) 
 		{
 			for (int j = 0; j < PUZZLEDIFFICULTY; j++) 
 			{
-				puzzle[i][j]->reset(x + j * 45, y + i * 45, (m_level * 135) + (j * 45), 508 + (i * 45), 45, 45);
+				original_puzzle[i][j]->reset(x + j * 45, y + i * 45, (m_level * 135) + (j * 45), 508 + (i * 45), 45, 45);
 			}
 		}
+		
+		puzzle = original_puzzle;
 
 		// Down - Right corner
 		puzzle[PUZZLEDIFFICULTY-1][PUZZLEDIFFICULTY-1]->reset(x + (PUZZLEDIFFICULTY - 1) * 45, y + (PUZZLEDIFFICULTY - 1) * 45, 492, 155, 45, 45, true);
@@ -811,14 +1354,17 @@ void GameScreen::ResetPuzzle(bool ingame)
 				u16 tempX = puzzle[i][j]->getX();
 				u16 tempY = puzzle[i][j]->getY();
 				u16 tempID = puzzle[i][j]->getID();
+				Token * tempToken = puzzle[i][j];
 
 				puzzle[i][j]->setX(puzzle[m][n]->getX());
 				puzzle[i][j]->setY(puzzle[m][n]->getY());
 				puzzle[i][j]->setID(puzzle[m][n]->getID());
+				puzzle[i][j] = puzzle[m][n];
 
 				puzzle[m][n]->setX(tempX);
 				puzzle[m][n]->setY(tempY);
 				puzzle[m][n]->setID(tempID);
+				puzzle[m][n] = tempToken;
 			}
 		}
 	}

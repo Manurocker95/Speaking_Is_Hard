@@ -70,6 +70,7 @@ public:
 	void load_bad_sentences(const char* path);
 	void passedPuzzle(bool isTrue);
 	void CheckPuzzle();
+	void MovePuzzle(touchPosition touch);
 private:
 
 	SCREEN m_screen;
@@ -99,15 +100,16 @@ private:
 	u16 m_level;
 
 	touchPosition touch;
-	TRANSITION_STATE m_transitionState;
-	std::vector <std::string> m_sentences;
-	std::vector <std::string> m_badSentences;
-	std::vector< std::vector<Token*> > puzzle;
-	std::string sentence;
-	President * m_president;
-	sf2d_texture * m_bg, * m_sprites;
-	sound * m_bgm;						// Sounds
-	sftd_font* font, *font2;			// Main Font, Font 2
+	TRANSITION_STATE m_transitionState;						// Transition state C:
+	std::vector <std::string> m_sentences;					// Vector of good sentences. Each good sentence has a bad sentence
+	std::vector <std::string> m_badSentences;				// Vector of bad sentences. Each good sentence has a bad sentence
+	std::vector< std::vector<Token*> > puzzle;				// The modifyied puzzle
+	std::vector< std::vector<Token*> > original_puzzle;		// Original stuff for the puzzle
+	std::string sentence, debug;							// Speaking sentence 
+	President * m_president;								// President Object
+	sf2d_texture * m_bg, * m_sprites;						// Backgrounds, sprites
+	sound * m_bgm, *m_bgm2;									// Sounds
+	sftd_font* font, *font2;								// Main Font, Font 2
 };
 
 #endif

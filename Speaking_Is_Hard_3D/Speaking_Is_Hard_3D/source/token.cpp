@@ -194,3 +194,8 @@ u16 Token::getSizeYPerFrame()
 {
 	return m_sizeYPerFrame;
 }
+
+bool Token::isPressed(touchPosition touch)
+{
+	return (touch.px > m_x && touch.px < m_x + m_sizePerFrame && touch.py > m_y && touch.py < m_y + m_sizeYPerFrame);
+}
