@@ -18,19 +18,21 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 
 #include "SplashScreen.h"
 
+// * Constructor 
 SplashScreen::SplashScreen() : Scene()
 {
 	Start();
 }
 
+// * Destructor
 SplashScreen::~SplashScreen()
 {
-	printf("Deleted SplashScreen Object");
 	m_SFX->stop();
 	delete m_SFX;
 	delete m_splashScreen;
 }
 
+// * Start - We initialize the variables
 void SplashScreen::Start()
 {
 	m_scTimer = 0;
@@ -41,6 +43,7 @@ void SplashScreen::Start()
 	m_SFX = new sound(SND_SFX_SPLASH, 2, false);
 }
 
+// * Draw the images every frame
 void SplashScreen::Draw()
 {
 	// Top Screen
@@ -54,6 +57,7 @@ void SplashScreen::Draw()
 	sf2d_end_frame();
 }
 
+// * Update game stuff (SplashScreen opacity)
 void SplashScreen::Update()
 {
 	switch (m_splashOpeningState)
@@ -102,12 +106,14 @@ void SplashScreen::Update()
 	}
 }
 
+// * We go to the game
 void SplashScreen::GoToGame()
 {
 	SceneManager::instance()->setActualScene(SceneManager::GAME);
 	delete(this);
 }
 
+// * We check the inputs
 void SplashScreen::CheckInputs()
 {
 	hidScanInput();

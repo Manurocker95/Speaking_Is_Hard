@@ -1,4 +1,4 @@
-/* This file is part of T-Rekt 3D!
+/* This file is part of Speaking Is Hard 3D!
 
 Copyright (C) 2017 Manuel Rodríguez Matesanz
 >    This program is free software: you can redistribute it and/or modify
@@ -69,6 +69,7 @@ public:
 	void load_sentences(const char* path);
 	void load_bad_sentences(const char* path);
 	void passedPuzzle(bool isTrue);
+	void CheckPuzzle();
 private:
 
 	SCREEN m_screen;

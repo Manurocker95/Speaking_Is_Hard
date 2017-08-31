@@ -1,5 +1,3 @@
-#include "President.h"
-
 /* This file is part of Speaking Is Hard 3D!
 
 Copyright (C) 2017 Manuel Rodríguez Matesanz
@@ -18,6 +16,9 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 >    See LICENSE for information.
 */
 
+#include "President.h"
+
+// * Constructor
 President::President(int x, u16 y, sf2d_texture & sprite, bool multipleFrames, u16 numFrames, u16 sizePerFrame, u16 sizeYPerFrame) : m_sprite(sprite)
 {
 	m_x = x;
@@ -41,12 +42,13 @@ President::President(int x, u16 y, sf2d_texture & sprite, bool multipleFrames, u
 	m_movement = PRESIDENTMOVEMENT;
 }
 
-
+// * Destructor
 President::~President()
 {
 	//delete m_sprite;
 }
 
+// * Draw
 void President::Draw(float offset, u32 opacity)
 {
 	if (m_state == NONE)
@@ -64,6 +66,7 @@ void President::Draw(float offset, u32 opacity)
 	}
 }
 
+// * Update
 bool President::Update()
 {
 	if (m_state == NONE)
@@ -132,6 +135,7 @@ bool President::Update()
 	return false;
 }
 
+// * Change to Speak
 void President::speak()
 {
 	m_state = SPEAKING;
@@ -143,6 +147,7 @@ void President::speak()
 
 }
 
+// * Change to Mistake
 void President::mistake()
 {
 	m_state = MISTAKE;
@@ -154,26 +159,31 @@ void President::mistake()
 
 }
 
+// * Check if we are speaking
 bool President::isSpeaking()
 {
 	return (m_state == SPEAKING);
 }
 
+// * Check if we are standing
 bool President::isStanding()
 {
 	return (m_state == STANDING);
 }
 
+// * Check if we are waiting
 bool President::isWaiting()
 {
 	return (m_state == WAITING);
 }
 
+// * Check if we are mistaking
 bool President::isMistaking()
 {
 	return (m_state == MISTAKE);
 }
 
+// * Moving the president right or left
 void President::moving(bool value, u16 dir)
 {
 	m_moving = value;
@@ -207,6 +217,7 @@ void President::moving(bool value, u16 dir)
 	}
 }
 
+// * Wait for transition after speaking
 void President::wait()
 {
 	m_state = WAITING;
@@ -217,13 +228,14 @@ void President::wait()
 	m_numFrames = 6;
 }
 
+// * Move to certain coordinate
 void President::moveToCoord(int x, u16 y)
 {
 	m_x = x;
 	m_y = y;
 }
 
-///summary: Si n
+// * Move (same as moving but adapted)
 void President::move(int value, u16 dir)
 {
 	if (m_state == NONE)
@@ -284,16 +296,19 @@ void President::move(int value, u16 dir)
 	}
 }
 
+// * Get the sprite reference 
 sf2d_texture* President::getSprite()
 {
 	return &m_sprite;
 }
 
+// * Set the sprite reference
 void President::setSprite(sf2d_texture & sprite)
 {
 	m_sprite = sprite;
 }
 
+// * Set new sprite with animations set by frames
 void President::setTotallyNewSprite(sf2d_texture & sprite, u16 numFrames, u16 sizePerFrame, u16 sizeYPerFrame)
 {
 	m_sprite = sprite;
@@ -304,63 +319,75 @@ void President::setTotallyNewSprite(sf2d_texture & sprite, u16 numFrames, u16 si
 	m_stage = 0;
 }
 
+// * Set the transform position X to a X position
 void President::setX(int value)
 {
 	m_x = value;
 }
 
+// * Get the transform position X
 int President::getX()
 {
 	return m_x;
 }
 
+// * Set the transform position Y to a Y position
 void President::setY(u16 value)
 {
 	m_y = value;
 }
 
+// * Get the transform position Y
 u16 President::getY()
 {
 	return m_y;
 }
 
+// * End - We delete this object
 void President::end()
 {
 	//sf2d_free_texture(&m_sprite);
 	delete(this);
 }
 
+// * Get the state 
 President::MState President::getState()
 {
 	return m_state;
 }
 
+// * Set the state
 void President::setState(President::MState value)
 {
 	m_state = value;
 }
 
+// * Set the number of frames for the current animation
 void President::setNumFrames(u16 value)
 {
 	m_numFrames = value;
 	m_currentFrame = 0;
 }
 
+// * Get the number of frames in the current animation
 u16 President::getNumFrames()
 {
 	return m_numFrames;
 }
 
+// * Frame Size in X axis
 void President::setFrameSize(u16 value)
 {
 	m_sizePerFrame = value;
 }
 
+// * Get Frame Size in X axis
 u16 President::getFrameSize()
 {
 	return m_sizePerFrame;
 }
 
+// * Reset the variables for reseting the game
 void President::reset()
 {
 	m_timer = 0;
@@ -380,6 +407,7 @@ void President::reset()
 	m_movement = PRESIDENTMOVEMENT;
 }
 
+// * Get Frame Size in Y axis
 u16 President::getSizeYPerFrame()
 {
 	return m_sizeYPerFrame;

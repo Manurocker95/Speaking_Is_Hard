@@ -1,4 +1,4 @@
-/* This file is part of T-Rekt 3D!
+/* This file is part of Speaking Is Hard 3D!
 
 Copyright (C) 2017 Manuel Rodríguez Matesanz
 >    This program is free software: you can redistribute it and/or modify

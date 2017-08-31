@@ -1,4 +1,4 @@
-/* This file is part of T-Rekt 3D!
+/* This file is part of Speaking Is Hard 3D!
 
 Copyright (C) 2017 Manuel Rodríguez Matesanz
 >    This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@ Copyright (C) 2017 Manuel Rodríguez Matesanz
 
 #include "Game.h"
 
+// * Constructor - We create the scene - It calls the Start method
 GameScreen::GameScreen(u32 score) : Scene ()
 {
 	m_maxScore = score;
@@ -25,6 +26,7 @@ GameScreen::GameScreen(u32 score) : Scene ()
 	Start();
 }
 
+// * Destructor - We delete pointers and stuff
 GameScreen::~GameScreen()
 {
 
@@ -36,9 +38,12 @@ GameScreen::~GameScreen()
 
 }
 
+// * Start - We Initialize the variables
 void GameScreen::Start()
 {
 	m_screen = TITLE;
+	m_transitionState = OPENING;
+
 	m_pause = false;
 	m_playedBefore = false;
 	m_gameStarted = false;
@@ -50,6 +55,7 @@ void GameScreen::Start()
 	m_fromPuzzle = false;
 	m_failed = false;
 	m_showingFPS = false;
+
 	m_score = 0;
 	m_maxTime = TIMEPERPUZZLE;
 	m_time = m_maxTime;
@@ -59,7 +65,6 @@ void GameScreen::Start()
 	m_scTimer = 0;
 	m_level = 0;
 	m_sentenceID = 0;
-	m_transitionState = OPENING;
 	sentence = "";
 	load_sentences(SENTENCE_FILE);
 	load_bad_sentences(BAD_SENTENCE_FILE);
@@ -102,11 +107,13 @@ void GameScreen::Start()
 	m_bgm->play();
 }
 
+// * Go To Title - We Go To 
 void GameScreen::goToTitle()
 {
 	m_screen = TITLE;
 }
 
+// * Draw - We draw every  
 void GameScreen::Draw()
 {
 	m_offset = 0;
@@ -353,6 +360,7 @@ void GameScreen::Draw()
 	}
 }
 
+// * Update - We update the game
 void GameScreen::Update()
 {
 	switch (m_screen)
@@ -463,9 +471,9 @@ void GameScreen::Update()
 								m_president->speak();
 								m_level = rand() % NUMOFLEVELS;
 							}
-						}
-							
+						}	
 					}
+
 					break;
 				}
 			}
@@ -546,11 +554,13 @@ void GameScreen::Update()
 						m_inTransition = false;
 						m_scTimer = 0;
 					}
+
 					break;
 				}
 			}
 			else
 			{
+
 				m_timePuzzle -= 1 / sf2d_get_fps();
 				m_time = (u32)m_timePuzzle;
 
@@ -564,20 +574,23 @@ void GameScreen::Update()
 	}
 }
 
+// * Check Inputs - We check what inputs are pressed
 void GameScreen::CheckInputs()
 {
 	hidScanInput();
 	held = hidKeysHeld();
 	
-
 	switch (m_screen)
 	{
+
 	case TITLE:
+		
 		if (hidKeysDown() & KEY_A)
 		{
 			m_inTransition = true;
 			return;
 		}
+
 		if (hidKeysDown() & KEY_TOUCH)
 		{
 			hidTouchRead(&touch);
@@ -592,6 +605,7 @@ void GameScreen::CheckInputs()
 			}
 		}
 		break;
+
 	case GAME:
 		
 		if (!m_inTransition && (hidKeysDown() & KEY_B))
@@ -608,31 +622,45 @@ void GameScreen::CheckInputs()
 		}
 
 		break;
+
 	case PUZZLE:
 
-		if (hidKeysDown() & KEY_B)
+		if (!m_pause)
 		{
-			passedPuzzle(false);
-		}
-
-		if (DEBUGMODE && (hidKeysDown() & KEY_X))
-		{
-			passedPuzzle(true);
-		}
-
-		if (hidKeysDown() & KEY_TOUCH)
-		{
-			hidTouchRead(&touch);
-			if ((touch.px > 248 && touch.px < 312) && (touch.py > 76 && touch.py < 140)) 
+			if (hidKeysDown() & KEY_B)
 			{
 				passedPuzzle(false);
 			}
 
-			if ((touch.px > 16 && touch.px < 80) && (touch.py > 76 && touch.py < 140))
+			if (hidKeysDown() & KEY_A)
+			{
+				CheckPuzzle();
+			}
+
+			if (hidKeysDown() & KEY_Y)
 			{
 				ResetPuzzle(true);
 			}
-		}
+
+			if (DEBUGMODE && (hidKeysDown() & KEY_X))
+			{
+				passedPuzzle(true);
+			}
+
+			if (hidKeysDown() & KEY_TOUCH)
+			{
+				hidTouchRead(&touch);
+				if ((touch.px > 248 && touch.px < 312) && (touch.py > 76 && touch.py < 140))
+				{
+					CheckPuzzle();
+				}
+
+				if ((touch.px > 16 && touch.px < 80) && (touch.py > 76 && touch.py < 140))
+				{
+					passedPuzzle(false);
+				}
+			}
+		}	
 
 		break;
 	}
@@ -662,6 +690,38 @@ void GameScreen::CheckInputs()
 	}
 }
 
+// * Check Puzzle - We check if we ended right or not 
+void GameScreen::CheckPuzzle()
+{
+	bool ret = true;
+
+	u16 x = 96;
+	u16 y = 45;
+	u16 goodID = 0;
+	u16 id = 0;
+
+	for (int i = 0; i < PUZZLEDIFFICULTY; i++)
+	{
+		for (int j = 0; j < PUZZLEDIFFICULTY; j++)
+		{
+			if (puzzle[i][j]->getID() == id && (puzzle[i][j]->getX() == x + j * 45) && (puzzle[i][j]->getY() == y + i * 45))
+			{
+				goodID++;
+			}
+
+			id++;
+		}
+	}
+
+	if (goodID != PUZZLEDIFFICULTY*PUZZLEDIFFICULTY)
+	{
+		ret = false;
+	}
+
+	passedPuzzle(ret);
+}
+
+// * Passed Puzzle - We return to the speak with right answer or wrong answer
 void GameScreen::passedPuzzle(bool isTrue)
 {
 	if (isTrue)
@@ -685,6 +745,7 @@ void GameScreen::passedPuzzle(bool isTrue)
 	}
 }
 
+// * Reset Puzzle - We reset the puzzle 
 void GameScreen::ResetPuzzle(bool ingame)
 {
 	m_time = m_maxTime;
@@ -706,17 +767,22 @@ void GameScreen::ResetPuzzle(bool ingame)
 
 				u16 tempX = puzzle[i][j]->getX();
 				u16 tempY = puzzle[i][j]->getY();
+				u16 tempID = puzzle[i][j]->getID();
 
 				puzzle[i][j]->setX(puzzle[m][n]->getX());
 				puzzle[i][j]->setY(puzzle[m][n]->getY());
+				puzzle[i][j]->setID(puzzle[m][n]->getID());
 
 				puzzle[m][n]->setX(tempX);
 				puzzle[m][n]->setY(tempY);
+				puzzle[m][n]->setID(tempID);
 			}
 		}
 	}
 	else
 	{
+		srand(static_cast<unsigned int>(time(0)));
+
 		m_level = rand() % NUMOFLEVELS;
 
 		u16 x = 96;
@@ -731,7 +797,7 @@ void GameScreen::ResetPuzzle(bool ingame)
 		}
 
 		// Down - Right corner
-		puzzle[PUZZLEDIFFICULTY-1][PUZZLEDIFFICULTY-1]->reset(x + (PUZZLEDIFFICULTY - 1) * 45, y + (PUZZLEDIFFICULTY - 1) * 45, 492, 155, 45, 45);
+		puzzle[PUZZLEDIFFICULTY-1][PUZZLEDIFFICULTY-1]->reset(x + (PUZZLEDIFFICULTY - 1) * 45, y + (PUZZLEDIFFICULTY - 1) * 45, 492, 155, 45, 45, true);
 
 		for (int i = puzzle.size() - 1; i > 0; i--)
 		{
@@ -744,18 +810,22 @@ void GameScreen::ResetPuzzle(bool ingame)
 
 				u16 tempX = puzzle[i][j]->getX();
 				u16 tempY = puzzle[i][j]->getY();
+				u16 tempID = puzzle[i][j]->getID();
 
 				puzzle[i][j]->setX(puzzle[m][n]->getX());
 				puzzle[i][j]->setY(puzzle[m][n]->getY());
+				puzzle[i][j]->setID(puzzle[m][n]->getID());
 
 				puzzle[m][n]->setX(tempX);
 				puzzle[m][n]->setY(tempY);
+				puzzle[m][n]->setID(tempID);
 			}
 		}
 	}
 
 }
 
+// * Load Sentences from RomFS - 
 void GameScreen::load_sentences(const char* path)
 {
 	FILE* f = fopen(path, "r");
@@ -786,6 +856,7 @@ void GameScreen::load_sentences(const char* path)
 	}
 }
 
+// * Load Bad Sentences from RomFS - 
 void GameScreen::load_bad_sentences(const char* path)
 {
 	FILE* f = fopen(path, "r");
@@ -803,14 +874,11 @@ void GameScreen::load_bad_sentences(const char* path)
 					mystring[a - 2] = 0;
 			}
 
-			//m_sentences.push_back(std::to_string(sentence));
 			m_badSentences.push_back(mystring);
-			//puts(mystring);
 			sentence++;
 		}
 
 		//m_badSentences.push_back("Aaaaaand... that's it.");
-		//printf(">>EOF<<\n");
 		fclose(f);
 	}
 	else
@@ -819,11 +887,13 @@ void GameScreen::load_bad_sentences(const char* path)
 	}
 }
 
+// * End Game - 
 void GameScreen::EndGame()
 {
 
 }
 
+// * Reset Game - We reset the speaking scene
 void GameScreen::ResetGame()
 {
 	m_score = 0;
@@ -835,6 +905,7 @@ void GameScreen::ResetGame()
 	m_president->setX(-67);
 }
 
+// * Check Score - 
 void GameScreen::CheckScore()
 {
 	if (m_score > m_maxScore)

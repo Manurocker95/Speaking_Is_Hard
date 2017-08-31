@@ -9,7 +9,7 @@ This game includes:
 	- Simple save for game data
 	- Stereoscopic 3D (configurable by settings)
 	- Simple code that can be used as reference
-	- SplashScreen 
+	- Splash Screen 
 	- Sounds
 	- .3dsx, .elf, .cci, .3ds, .cia compiling
 

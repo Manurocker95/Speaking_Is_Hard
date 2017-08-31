@@ -1,6 +1,6 @@
 // Cheuble's sound class
-
 #pragma once
+
 #include <3ds.h>
 #include <string>
 #include <cstdlib>

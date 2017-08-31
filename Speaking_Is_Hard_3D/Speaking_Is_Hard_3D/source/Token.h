@@ -48,12 +48,14 @@ public:
 	u16 getNumFrames();
 	void setFrameSize(u16 value);
 	u16 getFrameSize();
-	void reset(u16 x, u16 y, u16 startingOffsetX, u16 startingOffsetY, u16 sizePerFrame, u16 sizeYPerFrame);
+	void reset(u16 x, u16 y, u16 startingOffsetX, u16 startingOffsetY, u16 sizePerFrame, u16 sizeYPerFrame, bool blank = false);
 	u16 getSizeYPerFrame();
 	void moving(bool value, u16 dir);
 	bool isMoving();
-	u16 getID;
-
+	bool isBlank();
+	void blanked(bool blank);
+	u16 getID();
+	void setID(u16 newid);
 private:
 
 	u16 m_x, m_originalX;
@@ -69,7 +71,7 @@ private:
 	u16 m_id;
 	bool m_moving;
 	bool m_multipleFrames;
-
+	bool m_blank;
 	sf2d_texture & m_sprite;
 
 };
